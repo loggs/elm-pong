@@ -254,13 +254,35 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
+    div [class "container"
+        , style [
+            ("width", "100%")
+            , ("height", "100%")
+        ]
+    ]
+    [
+     heading
+     , div [class "row"] [ 
+        score_ model.playerScore Player
+     , gameArea model
+     , score_ model.computerScore Computer
+     ]
+    ]
+
+
+gameArea : Model -> Html Msg
+gameArea model =
+    div [class "col-sm-6 text-center", style [ ("background-color", "white") ]] [
     div
-        [ style
-            [ ( "position", "relative" )
-            , ( "top", "50px" )
-            , ( "width", "500px" )
+        [ class "text-center", 
+        style
+            [ --( "position", "relative" )
+             --( "top", "50px" )
+             ( "width", "500px" )
             , ( "height", "500px" )
-            , ( "left", "300px" )
+            , ("text-align", "center")
+            , ("display", "inline-block")
+            --, ( "left", "300px" )
             , ( "border-color", "black" )
             , ( "border-width", "3px" )
             , ( "border-style", "solid" )
@@ -268,30 +290,29 @@ view model =
             , ( "color", "white" )
             ]
         ]
-        [ heading
-        , paddle_ model Computer
+        [ paddle_ model Computer
         , ball_ model
         , paddle_ model Player
-        , score_ model.playerScore Player
-        , score_ model.computerScore Computer
         ]
-
+        ]
 
 heading : Html Msg
 heading =
+    div [class "row"] [
     div
-        [ style
+        [ class "col-sm-12"
+        , style
             [ ( "font-family", "Faster One" )
-            , ( "left", "490px" )
-            , ( "top", "0px" )
+            --, ( "left", "490px" )
+            --, ( "top", "0px" )
             , ( "text-align", "center" )
             , ( "color", "black" )
-            , ( "position", "fixed" )
+            --, ( "position", "fixed" )
             , ( "font-size", "300%" )
             ]
         ]
         [ text "PONG" ]
-
+        ]
 
 paddle_ : Model -> Person -> Html Msg
 paddle_ model person =
@@ -335,25 +356,25 @@ ball_ model =
 score_ : Int -> Person -> Html Msg
 score_ scoreValue person =
     let
-        scorePlacement =
+        (scorePlacement, classAddition) =
             case person of
                 Player ->
-                    "50px"
+                    ("50px", "")
 
                 Computer ->
-                    "845px"
+                    ("845px", "col-sm-offset-8")
     in
         div
-            [ style
+            [ class ("col-sm-3 text-center")
+             , style
                 [ ( "background-color", "white" )
                 , ( "color", "black" )
-                , ( "text-align", "center" )
-                , ( "position", "fixed" )
-                , ( "top", "220px" )
+                --, ( "text-align", "center" )
+                --, ( "position", "fixed" )
+                --, ( "top", "220px" )
                 , ( "font-family", "Monofett" )
                 , ( "font-size", "400%" )
-                , ( "left", scorePlacement )
-                , ( "display", "inline-block" )
+                --, ( "left", scorePlacement )
                 ]
             ]
             [ text <| toString person

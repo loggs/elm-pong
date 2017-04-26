@@ -10107,57 +10107,43 @@ var _ohanhi$keyboard_extra$Keyboard_Extra$targetKey = A2(
 
 var _user$project$Main$score_ = F2(
 	function (scoreValue, person) {
-		var scorePlacement = function () {
-			var _p0 = person;
-			if (_p0.ctor === 'Player') {
-				return '140px';
+		var _p0 = function () {
+			var _p1 = person;
+			if (_p1.ctor === 'Player') {
+				return {ctor: '_Tuple2', _0: '50px', _1: ''};
 			} else {
-				return '935px';
+				return {ctor: '_Tuple2', _0: '845px', _1: 'col-sm-offset-8'};
 			}
 		}();
+		var scorePlacement = _p0._0;
+		var classAddition = _p0._1;
 		return A2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$style(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'white'},
-						_1: {
+				_0: _elm_lang$html$Html_Attributes$class('col-sm-3 text-center'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$style(
+						{
 							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'color', _1: 'black'},
+							_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'white'},
 							_1: {
 								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'text-align', _1: 'center'},
+								_0: {ctor: '_Tuple2', _0: 'color', _1: 'black'},
 								_1: {
 									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'position', _1: 'fixed'},
+									_0: {ctor: '_Tuple2', _0: 'font-family', _1: 'Monofett'},
 									_1: {
 										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'top', _1: '220px'},
-										_1: {
-											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'font-family', _1: 'Monofett'},
-											_1: {
-												ctor: '::',
-												_0: {ctor: '_Tuple2', _0: 'font-size', _1: '400%'},
-												_1: {
-													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'left', _1: scorePlacement},
-													_1: {
-														ctor: '::',
-														_0: {ctor: '_Tuple2', _0: 'display', _1: 'inline-block'},
-														_1: {ctor: '[]'}
-													}
-												}
-											}
-										}
+										_0: {ctor: '_Tuple2', _0: 'font-size', _1: '400%'},
+										_1: {ctor: '[]'}
 									}
 								}
 							}
-						}
-					}),
-				_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
 			},
 			{
 				ctor: '::',
@@ -10229,16 +10215,16 @@ var _user$project$Main$ball_ = function (model) {
 };
 var _user$project$Main$paddle_ = F2(
 	function (model, person) {
-		var _p1 = function () {
-			var _p2 = person;
-			if (_p2.ctor === 'Player') {
+		var _p2 = function () {
+			var _p3 = person;
+			if (_p3.ctor === 'Player') {
 				return {ctor: '_Tuple2', _0: model.playerX, _1: model.playerY};
 			} else {
 				return {ctor: '_Tuple2', _0: model.computerX, _1: model.computerY};
 			}
 		}();
-		var positionX = _p1._0;
-		var positionY = _p1._1;
+		var positionX = _p2._0;
+		var positionY = _p2._1;
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -10291,25 +10277,28 @@ var _user$project$Main$heading = A2(
 	_elm_lang$html$Html$div,
 	{
 		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$style(
+		_0: _elm_lang$html$Html_Attributes$class('row'),
+		_1: {ctor: '[]'}
+	},
+	{
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: {ctor: '_Tuple2', _0: 'font-family', _1: 'Faster One'},
+				_0: _elm_lang$html$Html_Attributes$class('col-sm-12'),
 				_1: {
 					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'left', _1: '580px'},
-					_1: {
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'top', _1: '0px'},
-						_1: {
+					_0: _elm_lang$html$Html_Attributes$style(
+						{
 							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'text-align', _1: 'center'},
+							_0: {ctor: '_Tuple2', _0: 'font-family', _1: 'Faster One'},
 							_1: {
 								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'color', _1: 'black'},
+								_0: {ctor: '_Tuple2', _0: 'text-align', _1: 'center'},
 								_1: {
 									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'position', _1: 'fixed'},
+									_0: {ctor: '_Tuple2', _0: 'color', _1: 'black'},
 									_1: {
 										ctor: '::',
 										_0: {ctor: '_Tuple2', _0: 'font-size', _1: '300%'},
@@ -10317,15 +10306,15 @@ var _user$project$Main$heading = A2(
 									}
 								}
 							}
-						}
-					}
+						}),
+					_1: {ctor: '[]'}
 				}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('PONG'),
+				_1: {ctor: '[]'}
 			}),
-		_1: {ctor: '[]'}
-	},
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html$text('PONG'),
 		_1: {ctor: '[]'}
 	});
 var _user$project$Main$checkGoalScored = function (model) {
@@ -10386,7 +10375,7 @@ var _user$project$Main$onUserInput = F2(
 	});
 var _user$project$Main$checkBoundaries = F3(
 	function (position, change, dir) {
-		var _p3 = _elm_lang$core$Native_Utils.eq(dir, _user$project$Main$Left) ? {
+		var _p4 = _elm_lang$core$Native_Utils.eq(dir, _user$project$Main$Left) ? {
 			ctor: '_Tuple3',
 			_0: 0,
 			_1: F2(
@@ -10420,9 +10409,9 @@ var _user$project$Main$checkBoundaries = F3(
 					return !_elm_lang$core$Native_Utils.eq(x, y);
 				})
 		});
-		var maxValue = _p3._0;
-		var operator = _p3._1;
-		var comparison = _p3._2;
+		var maxValue = _p4._0;
+		var operator = _p4._1;
+		var comparison = _p4._2;
 		var withChange = A2(operator, position, change);
 		return A2(comparison, maxValue, withChange) ? position : withChange;
 	});
@@ -10438,14 +10427,14 @@ var _user$project$Main$updatePlayer = F3(
 	});
 var _user$project$Main$onFrame = F2(
 	function (time, model) {
-		var _p4 = _user$project$Main$checkGoalScored(model);
-		var newPositionX = _p4._0;
-		var newPositionY = _p4._1;
-		var updateScoreComp = _p4._2;
-		var updateScorePlayer = _p4._3;
-		var _p5 = _user$project$Main$checkCollision(model);
-		var newDirectionX = _p5._0;
-		var newDirectionY = _p5._1;
+		var _p5 = _user$project$Main$checkGoalScored(model);
+		var newPositionX = _p5._0;
+		var newPositionY = _p5._1;
+		var updateScoreComp = _p5._2;
+		var updateScorePlayer = _p5._3;
+		var _p6 = _user$project$Main$checkCollision(model);
+		var newDirectionX = _p6._0;
+		var newDirectionY = _p6._1;
 		return {
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Native_Utils.update(
@@ -10465,85 +10454,143 @@ var _user$project$Main$onFrame = F2(
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p6 = msg;
-		if (_p6.ctor === 'KeyboardExtraMsg') {
-			return A2(_user$project$Main$onUserInput, _p6._0, model);
+		var _p7 = msg;
+		if (_p7.ctor === 'KeyboardExtraMsg') {
+			return A2(_user$project$Main$onUserInput, _p7._0, model);
 		} else {
-			return A2(_user$project$Main$onFrame, _p6._0, model);
+			return A2(_user$project$Main$onFrame, _p7._0, model);
 		}
 	});
-var _user$project$Main$view = function (model) {
+var _user$project$Main$gameArea = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$style(
+			_0: _elm_lang$html$Html_Attributes$class('col-sm-6 text-center'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$style(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'white'},
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'position', _1: 'relative'},
+					_0: _elm_lang$html$Html_Attributes$class('text-center'),
 					_1: {
 						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'top', _1: '50px'},
-						_1: {
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'width', _1: '500px'},
-							_1: {
+						_0: _elm_lang$html$Html_Attributes$style(
+							{
 								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'height', _1: '500px'},
+								_0: {ctor: '_Tuple2', _0: 'width', _1: '500px'},
 								_1: {
 									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'left', _1: '390px'},
+									_0: {ctor: '_Tuple2', _0: 'height', _1: '500px'},
 									_1: {
 										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'border-color', _1: 'black'},
+										_0: {ctor: '_Tuple2', _0: 'text-align', _1: 'center'},
 										_1: {
 											ctor: '::',
-											_0: {ctor: '_Tuple2', _0: 'border-width', _1: '3px'},
+											_0: {ctor: '_Tuple2', _0: 'display', _1: 'inline-block'},
 											_1: {
 												ctor: '::',
-												_0: {ctor: '_Tuple2', _0: 'border-style', _1: 'solid'},
+												_0: {ctor: '_Tuple2', _0: 'border-color', _1: 'black'},
 												_1: {
 													ctor: '::',
-													_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'black'},
+													_0: {ctor: '_Tuple2', _0: 'border-width', _1: '3px'},
 													_1: {
 														ctor: '::',
-														_0: {ctor: '_Tuple2', _0: 'color', _1: 'white'},
-														_1: {ctor: '[]'}
+														_0: {ctor: '_Tuple2', _0: 'border-style', _1: 'solid'},
+														_1: {
+															ctor: '::',
+															_0: {ctor: '_Tuple2', _0: 'background-color', _1: 'black'},
+															_1: {
+																ctor: '::',
+																_0: {ctor: '_Tuple2', _0: 'color', _1: 'white'},
+																_1: {ctor: '[]'}
+															}
+														}
 													}
 												}
 											}
 										}
 									}
 								}
-							}
+							}),
+						_1: {ctor: '[]'}
+					}
+				},
+				{
+					ctor: '::',
+					_0: A2(_user$project$Main$paddle_, model, _user$project$Main$Computer),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Main$ball_(model),
+						_1: {
+							ctor: '::',
+							_0: A2(_user$project$Main$paddle_, model, _user$project$Main$Player),
+							_1: {ctor: '[]'}
 						}
 					}
 				}),
 			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Main$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('container'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$style(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'width', _1: '100%'},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'height', _1: '100%'},
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
 		},
 		{
 			ctor: '::',
 			_0: _user$project$Main$heading,
 			_1: {
 				ctor: '::',
-				_0: A2(_user$project$Main$paddle_, model, _user$project$Main$Computer),
-				_1: {
-					ctor: '::',
-					_0: _user$project$Main$ball_(model),
-					_1: {
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
 						ctor: '::',
-						_0: A2(_user$project$Main$paddle_, model, _user$project$Main$Player),
+						_0: _elm_lang$html$Html_Attributes$class('row'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(_user$project$Main$score_, model.playerScore, _user$project$Main$Player),
 						_1: {
 							ctor: '::',
-							_0: A2(_user$project$Main$score_, model.playerScore, _user$project$Main$Player),
+							_0: _user$project$Main$gameArea(model),
 							_1: {
 								ctor: '::',
 								_0: A2(_user$project$Main$score_, model.computerScore, _user$project$Main$Computer),
 								_1: {ctor: '[]'}
 							}
 						}
-					}
-				}
+					}),
+				_1: {ctor: '[]'}
 			}
 		});
 };

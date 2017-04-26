@@ -6,7 +6,6 @@ import Time
 import Keyboard.Extra
 import AnimationFrame
 import Char
-import Time
 
 
 main =
@@ -275,7 +274,6 @@ view model =
         , paddle_ model Player
         , score_ model.playerScore Player
         , score_ model.computerScore Computer
-        , text <| toString Time.now
         ]
 
 

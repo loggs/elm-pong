@@ -6,6 +6,7 @@ import Time
 import Keyboard.Extra
 import AnimationFrame
 import Char
+import Time
 
 
 main =
@@ -59,8 +60,8 @@ initModel =
     , computerDirection = Still
     , ballX = 250
     , ballY = 250
-    , ballDirectionX = -2
-    , ballDirectionY = 2
+    , ballDirectionX = -4
+    , ballDirectionY = 4
     , playerScore = 0
     , computerScore = 0
     , keyboardModel = Keyboard.Extra.initialState
@@ -202,29 +203,38 @@ checkCollision model =
         ( model.ballDirectionX * -1, model.ballDirectionY )
     else if
         (model.ballY + model.ballDirectionY)
-            == 4
+            == 2
             && (model.ballX + model.ballDirectionX)
             >= model.computerX
+            - 15
             && (model.ballX + model.ballDirectionX)
             <= (model.computerX + 100)
     then
-        ( model.ballDirectionX, model.ballDirectionY * -1 )
+        if
+            (model.computerDirection == Right && model.ballDirectionX < 0)
+                || (model.computerDirection == Left && model.ballDirectionX > 0)
+        then
+            ( model.ballDirectionX * -1, model.ballDirectionY * -1 )
+        else
+            ( model.ballDirectionX, model.ballDirectionY * -1 )
     else if
         (model.ballY + model.ballDirectionY + 15)
-            == 439
+            == 441
             && (model.ballX + model.ballDirectionX)
             >= model.playerX
+            - 15
             && (model.ballX + model.ballDirectionX)
             <= (model.playerX + 100)
     then
-        ( model.ballDirectionX, model.ballDirectionY * -1 )
+        if
+            (model.playerDirection == Right && model.ballDirectionX < 0)
+                || (model.playerDirection == Left && model.ballDirectionX > 0)
+        then
+            ( model.ballDirectionX * -1, model.ballDirectionY * -1 )
+        else
+            ( model.ballDirectionX, model.ballDirectionY * -1 )
     else
         ( model.ballDirectionX, model.ballDirectionY )
-
-
-moveBall : Float -> Float
-moveBall ballPosition =
-    ballPosition + 1
 
 
 
@@ -247,10 +257,11 @@ view : Model -> Html Msg
 view model =
     div
         [ style
-            [ ( "width", "500px" )
+            [ ( "position", "relative" )
+            , ( "top", "50px" )
+            , ( "width", "500px" )
             , ( "height", "500px" )
-            , ( "margin-left", "auto" )
-            , ( "margin-right", "auto" )
+            , ( "left", "300px" )
             , ( "border-color", "black" )
             , ( "border-width", "3px" )
             , ( "border-style", "solid" )
@@ -258,12 +269,30 @@ view model =
             , ( "color", "white" )
             ]
         ]
-        [ paddle_ model Computer
+        [ heading
+        , paddle_ model Computer
         , ball_ model
         , paddle_ model Player
         , score_ model.playerScore Player
         , score_ model.computerScore Computer
+        , text <| toString Time.now
         ]
+
+
+heading : Html Msg
+heading =
+    div
+        [ style
+            [ ( "font-family", "Faster One" )
+            , ( "left", "490px" )
+            , ( "top", "0px" )
+            , ( "text-align", "center" )
+            , ( "color", "black" )
+            , ( "position", "fixed" )
+            , ( "font-size", "300%" )
+            ]
+        ]
+        [ text "PONG" ]
 
 
 paddle_ : Model -> Person -> Html Msg
@@ -311,19 +340,25 @@ score_ scoreValue person =
         scorePlacement =
             case person of
                 Player ->
-                    "20px"
+                    "50px"
 
                 Computer ->
-                    "470px"
+                    "845px"
     in
         div
             [ style
                 [ ( "background-color", "white" )
                 , ( "color", "black" )
-                , ( "position", "relative" )
-                , ( "top", "450px" )
+                , ( "text-align", "center" )
+                , ( "position", "fixed" )
+                , ( "top", "220px" )
+                , ( "font-family", "Monofett" )
+                , ( "font-size", "400%" )
                 , ( "left", scorePlacement )
                 , ( "display", "inline-block" )
                 ]
             ]
-            [ text <| toString scoreValue ]
+            [ text <| toString person
+            , br [] []
+            , text <| toString scoreValue
+            ]

@@ -10328,9 +10328,6 @@ var _user$project$Main$heading = A2(
 		_0: _elm_lang$html$Html$text('PONG'),
 		_1: {ctor: '[]'}
 	});
-var _user$project$Main$moveBall = function (ballPosition) {
-	return ballPosition + 1;
-};
 var _user$project$Main$checkGoalScored = function (model) {
 	return (_elm_lang$core$Native_Utils.cmp(model.ballY + model.ballDirectionY, -40) < 1) ? {ctor: '_Tuple4', _0: 250, _1: 250, _2: 0, _3: 1} : ((_elm_lang$core$Native_Utils.cmp(model.ballY + model.ballDirectionY, 470) > -1) ? {ctor: '_Tuple4', _0: 250, _1: 250, _2: 1, _3: 0} : {ctor: '_Tuple4', _0: model.ballX + model.ballDirectionX, _1: model.ballY + model.ballDirectionY, _2: 0, _3: 0});
 };
@@ -10542,12 +10539,7 @@ var _user$project$Main$view = function (model) {
 							_1: {
 								ctor: '::',
 								_0: A2(_user$project$Main$score_, model.computerScore, _user$project$Main$Computer),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(
-										_elm_lang$core$Basics$toString(_elm_lang$core$Time$now)),
-									_1: {ctor: '[]'}
-								}
+								_1: {ctor: '[]'}
 							}
 						}
 					}

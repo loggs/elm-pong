@@ -10110,9 +10110,9 @@ var _user$project$Main$score_ = F2(
 		var scorePlacement = function () {
 			var _p0 = person;
 			if (_p0.ctor === 'Player') {
-				return '50px';
+				return '140px';
 			} else {
-				return '845px';
+				return '935px';
 			}
 		}();
 		return A2(
@@ -10297,7 +10297,7 @@ var _user$project$Main$heading = A2(
 				_0: {ctor: '_Tuple2', _0: 'font-family', _1: 'Faster One'},
 				_1: {
 					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'left', _1: '490px'},
+					_0: {ctor: '_Tuple2', _0: 'left', _1: '580px'},
 					_1: {
 						ctor: '::',
 						_0: {ctor: '_Tuple2', _0: 'top', _1: '0px'},
@@ -10492,7 +10492,7 @@ var _user$project$Main$view = function (model) {
 								_0: {ctor: '_Tuple2', _0: 'height', _1: '500px'},
 								_1: {
 									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'left', _1: '300px'},
+									_0: {ctor: '_Tuple2', _0: 'left', _1: '390px'},
 									_1: {
 										ctor: '::',
 										_0: {ctor: '_Tuple2', _0: 'border-color', _1: 'black'},

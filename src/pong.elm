@@ -1,3 +1,5 @@
+            
+
 module Main exposing (..)
 
 import Html exposing (..)
@@ -6,7 +8,9 @@ import Time
 import Keyboard.Extra
 import AnimationFrame
 import Char
-
+import Random
+import Svg
+import Random.Pcg as Rand
 
 main =
     Html.program
@@ -79,6 +83,8 @@ init =
 type Msg
     = KeyboardExtraMsg Keyboard.Extra.Msg
     | Step Time.Time
+    | NewBallDirectionX Int
+    | NewBallDirectionY Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -90,9 +96,21 @@ update msg model =
         Step time ->
             onFrame time model
 
+        NewBallDirectionX newDirection-> 
+            ({ model | ballDirectionX = updateBallDirection newDirection model.ballDirectionX}, Cmd.none)
+
+        NewBallDirectionY newDirection -> 
+            ({ model | ballDirectionY = updateBallDirection newDirection model.ballDirectionY}, Cmd.none)
 
 
 {- Step time -> onFrame time game -}
+
+updateBallDirection : Int -> Float -> Float
+updateBallDirection zeroOrOne modelDirection= 
+    case zeroOrOne of
+        1 -> modelDirection
+        _ -> -1 * modelDirection
+
 
 
 onUserInput : Keyboard.Extra.Msg -> Model -> ( Model, Cmd Msg )
@@ -129,19 +147,21 @@ onUserInput keyMsg model =
 onFrame : Time.Time -> Model -> ( Model, Cmd Msg )
 onFrame time model =
     let
-        ( newDirectionX, newDirectionY ) =
-            checkCollision model
-
-        ( newPositionX, newPositionY, updateScoreComp, updateScorePlayer ) =
+        ( newPositionX, newPositionY, updateScoreComp, updateScorePlayer, updateBallDirectionX,updateBallDirectionY  ) =
             checkGoalScored model
+
+        newComputerDirection = 
+            if model.ballX + model.ballDirectionX < model.computerX then Left
+            else Right
     in
         ( { model
             | playerX = updatePlayer model.playerDirection model Player
             , computerX = updatePlayer model.computerDirection model Computer
             , ballX = newPositionX
             , ballY = newPositionY
-            , ballDirectionX = newDirectionX
-            , ballDirectionY = newDirectionY
+            , ballDirectionX = updateBallDirectionX
+            , ballDirectionY = updateBallDirectionY 
+            , computerDirection = newComputerDirection
             , computerScore = model.computerScore + updateScoreComp
             , playerScore = model.playerScore + updateScorePlayer
           }
@@ -149,26 +169,36 @@ onFrame time model =
         )
 
 
-checkGoalScored : Model -> ( Float, Float, Int, Int )
+checkGoalScored : Model -> ( Float, Float, Int, Int, Float, Float )
 checkGoalScored model =
+    let 
+        firstSeed = 
+            Rand.initialSeed <| round (model.ballX * 1243433.3123443243)
+        (randX, newSeed) = 
+                    Rand.step (Rand.int 0 100) firstSeed
+        (randY, _) = 
+                    Rand.step (Rand.int 0 100) newSeed
+        (newBallDirX, newBallDirY) =
+                checkCollision model
+    in
     if (model.ballY + model.ballDirectionY) <= -40 then
-        ( 250, 250, 0, 1 )
+        ( 250, 250, 0, 1, 4 * (negOneOrOne randX), 4 * (negOneOrOne randY) )
     else if (model.ballY + model.ballDirectionY) >= 470 then
-        ( 250, 250, 1, 0 )
+        ( 250, 250, 1, 0, 4 * (negOneOrOne randX), 4 * (negOneOrOne randY) )
     else
-        ( model.ballX + model.ballDirectionX, model.ballY + model.ballDirectionY, 0, 0 )
+        ( model.ballX + model.ballDirectionX, model.ballY + model.ballDirectionY, 0, 0, newBallDirX, newBallDirY)
 
 
 updatePlayer : Direction -> Model -> Person -> Float
 updatePlayer direction model person =
     let
-        playerPosition =
+        (playerSpeed, playerPosition) =
             if person == Player then
-                model.playerX
+                (4, model.playerX)
             else
-                model.computerX
+                (3.99, model.computerX)
     in
-        checkBoundaries playerPosition 4 direction
+        checkBoundaries playerPosition playerSpeed direction
 
 
 checkBoundaries : Float -> Float -> Direction -> Float
@@ -190,7 +220,6 @@ checkBoundaries position change dir =
         else
             withChange
 
-
 checkCollision : Model -> ( Float, Float )
 checkCollision model =
     if
@@ -202,7 +231,7 @@ checkCollision model =
         ( model.ballDirectionX * -1, model.ballDirectionY )
     else if
         (model.ballY + model.ballDirectionY)
-            == 2
+            == 6
             && (model.ballX + model.ballDirectionX)
             >= model.computerX
             - 15
@@ -233,9 +262,12 @@ checkCollision model =
         else
             ( model.ballDirectionX, model.ballDirectionY * -1 )
     else
-        ( model.ballDirectionX, model.ballDirectionY )
+        ( model.ballDirectionX, model.ballDirectionY)
 
-
+negOneOrOne : Int -> Float
+negOneOrOne randInt =
+    if randInt > 50 then 1.0
+    else -1.0
 
 -- Subscriptions
 
@@ -276,13 +308,10 @@ gameArea model =
     div
         [ class "text-center", 
         style
-            [ --( "position", "relative" )
-             --( "top", "50px" )
-             ( "width", "500px" )
+            [ ( "width", "500px" )
             , ( "height", "500px" )
             , ("text-align", "center")
             , ("display", "inline-block")
-            --, ( "left", "300px" )
             , ( "border-color", "black" )
             , ( "border-width", "3px" )
             , ( "border-style", "solid" )
@@ -303,11 +332,8 @@ heading =
         [ class "col-sm-12"
         , style
             [ ( "font-family", "Faster One" )
-            --, ( "left", "490px" )
-            --, ( "top", "0px" )
             , ( "text-align", "center" )
             , ( "color", "black" )
-            --, ( "position", "fixed" )
             , ( "font-size", "300%" )
             ]
         ]
@@ -359,22 +385,19 @@ score_ scoreValue person =
         (scorePlacement, classAddition) =
             case person of
                 Player ->
-                    ("50px", "")
+                    ("50px", "text-right")
 
                 Computer ->
-                    ("845px", "col-sm-offset-8")
+                    ("845px", "text-left")
     in
         div
-            [ class ("col-sm-3 text-center")
+            [ class ("col-sm-3 " ++ classAddition)
              , style
                 [ ( "background-color", "white" )
                 , ( "color", "black" )
                 --, ( "text-align", "center" )
-                --, ( "position", "fixed" )
-                --, ( "top", "220px" )
                 , ( "font-family", "Monofett" )
                 , ( "font-size", "400%" )
-                --, ( "left", scorePlacement )
                 ]
             ]
             [ text <| toString person

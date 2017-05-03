@@ -11392,7 +11392,13 @@ var _user$project$Main$Model = function (a) {
 										return function (k) {
 											return function (l) {
 												return function (m) {
-													return {playerX: a, playerY: b, computerX: c, computerY: d, playerDirection: e, computerDirection: f, ballX: g, ballY: h, ballDirectionX: i, ballDirectionY: j, keyboardModel: k, playerScore: l, computerScore: m};
+													return function (n) {
+														return function (o) {
+															return function (p) {
+																return {ballSpeed: a, playerSpeed: b, computerSpeed: c, playerX: d, playerY: e, computerX: f, computerY: g, playerDirection: h, computerDirection: i, ballX: j, ballY: k, ballDirectionX: l, ballDirectionY: m, keyboardModel: n, playerScore: o, computerScore: p};
+															};
+														};
+													};
 												};
 											};
 										};
@@ -11407,7 +11413,7 @@ var _user$project$Main$Model = function (a) {
 	};
 };
 var _user$project$Main$Still = {ctor: 'Still'};
-var _user$project$Main$initModel = {playerX: 40, playerY: 420, computerX: 40, computerY: 10, playerDirection: _user$project$Main$Still, computerDirection: _user$project$Main$Still, ballX: 250, ballY: 250, ballDirectionX: -4, ballDirectionY: 4, playerScore: 0, computerScore: 0, keyboardModel: _ohanhi$keyboard_extra$Keyboard_Extra$initialState};
+var _user$project$Main$initModel = {ballSpeed: 2.5, playerSpeed: 4, computerSpeed: 4, playerX: 40, playerY: 420, computerX: 40, computerY: 10, playerDirection: _user$project$Main$Still, computerDirection: _user$project$Main$Still, ballX: 250, ballY: 250, ballDirectionX: -1, ballDirectionY: 1, playerScore: 0, computerScore: 0, keyboardModel: _ohanhi$keyboard_extra$Keyboard_Extra$initialState};
 var _user$project$Main$init = {ctor: '_Tuple2', _0: _user$project$Main$initModel, _1: _elm_lang$core$Platform_Cmd$none};
 var _user$project$Main$Right = {ctor: 'Right'};
 var _user$project$Main$Left = {ctor: 'Left'};
@@ -11475,7 +11481,7 @@ var _user$project$Main$checkBoundaries = F3(
 		return A2(comparison, maxValue, withChange) ? position : withChange;
 	});
 var _user$project$Main$checkCollision = function (model) {
-	return ((_elm_lang$core$Native_Utils.cmp(model.ballX + model.ballDirectionX, 0) < 1) || (_elm_lang$core$Native_Utils.cmp(model.ballX + model.ballDirectionX, 490) > -1)) ? {ctor: '_Tuple2', _0: model.ballDirectionX * -1, _1: model.ballDirectionY} : ((_elm_lang$core$Native_Utils.eq(model.ballY + model.ballDirectionY, 6) && ((_elm_lang$core$Native_Utils.cmp(model.ballX + model.ballDirectionX, model.computerX - 15) > -1) && (_elm_lang$core$Native_Utils.cmp(model.ballX + model.ballDirectionX, model.computerX + 100) < 1))) ? (((_elm_lang$core$Native_Utils.eq(model.computerDirection, _user$project$Main$Right) && (_elm_lang$core$Native_Utils.cmp(model.ballDirectionX, 0) < 0)) || (_elm_lang$core$Native_Utils.eq(model.computerDirection, _user$project$Main$Left) && (_elm_lang$core$Native_Utils.cmp(model.ballDirectionX, 0) > 0))) ? {ctor: '_Tuple2', _0: model.ballDirectionX * -1, _1: model.ballDirectionY * -1} : {ctor: '_Tuple2', _0: model.ballDirectionX, _1: model.ballDirectionY * -1}) : ((_elm_lang$core$Native_Utils.eq((model.ballY + model.ballDirectionY) + 15, 441) && ((_elm_lang$core$Native_Utils.cmp(model.ballX + model.ballDirectionX, model.playerX - 15) > -1) && (_elm_lang$core$Native_Utils.cmp(model.ballX + model.ballDirectionX, model.playerX + 100) < 1))) ? (((_elm_lang$core$Native_Utils.eq(model.playerDirection, _user$project$Main$Right) && (_elm_lang$core$Native_Utils.cmp(model.ballDirectionX, 0) < 0)) || (_elm_lang$core$Native_Utils.eq(model.playerDirection, _user$project$Main$Left) && (_elm_lang$core$Native_Utils.cmp(model.ballDirectionX, 0) > 0))) ? {ctor: '_Tuple2', _0: model.ballDirectionX * -1, _1: model.ballDirectionY * -1} : {ctor: '_Tuple2', _0: model.ballDirectionX, _1: model.ballDirectionY * -1}) : {ctor: '_Tuple2', _0: model.ballDirectionX, _1: model.ballDirectionY}));
+	return ((_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), 0) < 1) || (_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), 490) > -1)) ? {ctor: '_Tuple2', _0: model.ballDirectionX * -1, _1: model.ballDirectionY} : (((_elm_lang$core$Native_Utils.cmp(model.ballY + (model.ballDirectionY * model.ballSpeed), 3) > -1) && ((_elm_lang$core$Native_Utils.cmp(model.ballY + (model.ballDirectionY * model.ballSpeed), 9) < 1) && ((_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.computerX - 15) > -1) && (_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.computerX + 100) < 1)))) ? (((_elm_lang$core$Native_Utils.eq(model.computerDirection, _user$project$Main$Right) && (_elm_lang$core$Native_Utils.cmp(model.ballDirectionX * model.ballSpeed, 0) < 0)) || (_elm_lang$core$Native_Utils.eq(model.computerDirection, _user$project$Main$Left) && (_elm_lang$core$Native_Utils.cmp(model.ballDirectionX * model.ballSpeed, 0) > 0))) ? {ctor: '_Tuple2', _0: model.ballDirectionX * -1, _1: model.ballDirectionY * -1} : {ctor: '_Tuple2', _0: model.ballDirectionX, _1: model.ballDirectionY * -1}) : (((_elm_lang$core$Native_Utils.cmp((model.ballY + (model.ballDirectionY * model.ballSpeed)) + 15, 438) > -1) && ((_elm_lang$core$Native_Utils.cmp((model.ballY + (model.ballDirectionY * model.ballSpeed)) + 15, 444) < 1) && ((_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.playerX - 15) > -1) && (_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.playerX + 100) < 1)))) ? (((_elm_lang$core$Native_Utils.eq(model.playerDirection, _user$project$Main$Right) && (_elm_lang$core$Native_Utils.cmp(model.ballDirectionX * model.ballSpeed, 0) < 0)) || (_elm_lang$core$Native_Utils.eq(model.playerDirection, _user$project$Main$Left) && (_elm_lang$core$Native_Utils.cmp(model.ballDirectionX * model.ballSpeed, 0) > 0))) ? {ctor: '_Tuple2', _0: model.ballDirectionX * -1, _1: model.ballDirectionY * -1} : {ctor: '_Tuple2', _0: model.ballDirectionX, _1: model.ballDirectionY * -1}) : {ctor: '_Tuple2', _0: model.ballDirectionX, _1: model.ballDirectionY}));
 };
 var _user$project$Main$checkGoalScored = function (model) {
 	var _p6 = _user$project$Main$checkCollision(model);
@@ -11495,35 +11501,38 @@ var _user$project$Main$checkGoalScored = function (model) {
 		newSeed);
 	var randY = _p8._0;
 	return (_elm_lang$core$Native_Utils.cmp(model.ballY + model.ballDirectionY, -40) < 1) ? {
-		ctor: '_Tuple6',
+		ctor: '_Tuple7',
 		_0: 250,
 		_1: 250,
 		_2: 0,
 		_3: 1,
-		_4: 4 * _user$project$Main$negOneOrOne(randX),
-		_5: 4 * _user$project$Main$negOneOrOne(randY)
+		_4: _user$project$Main$negOneOrOne(randX),
+		_5: _user$project$Main$negOneOrOne(randY),
+		_6: 2.5
 	} : ((_elm_lang$core$Native_Utils.cmp(model.ballY + model.ballDirectionY, 470) > -1) ? {
-		ctor: '_Tuple6',
+		ctor: '_Tuple7',
 		_0: 250,
 		_1: 250,
 		_2: 1,
 		_3: 0,
-		_4: 4 * _user$project$Main$negOneOrOne(randX),
-		_5: 4 * _user$project$Main$negOneOrOne(randY)
-	} : {ctor: '_Tuple6', _0: model.ballX + model.ballDirectionX, _1: model.ballY + model.ballDirectionY, _2: 0, _3: 0, _4: newBallDirX, _5: newBallDirY});
+		_4: _user$project$Main$negOneOrOne(randX),
+		_5: _user$project$Main$negOneOrOne(randY),
+		_6: 2.5
+	} : {ctor: '_Tuple7', _0: model.ballX + (model.ballDirectionX * model.ballSpeed), _1: model.ballY + (model.ballDirectionY * model.ballSpeed), _2: 0, _3: 0, _4: newBallDirX, _5: newBallDirY, _6: model.ballSpeed});
 };
 var _user$project$Main$Computer = {ctor: 'Computer'};
 var _user$project$Main$Player = {ctor: 'Player'};
-var _user$project$Main$updatePlayer = F3(
-	function (direction, model, person) {
-		var _p9 = _elm_lang$core$Native_Utils.eq(person, _user$project$Main$Player) ? {ctor: '_Tuple2', _0: 4, _1: model.playerX} : {ctor: '_Tuple2', _0: 3.99, _1: model.computerX};
+var _user$project$Main$updatePlayer = F2(
+	function (model, person) {
+		var _p9 = _elm_lang$core$Native_Utils.eq(person, _user$project$Main$Player) ? {ctor: '_Tuple3', _0: model.playerSpeed, _1: model.playerX, _2: model.playerDirection} : {ctor: '_Tuple3', _0: model.computerSpeed, _1: model.computerX, _2: model.computerDirection};
 		var playerSpeed = _p9._0;
 		var playerPosition = _p9._1;
+		var direction = _p9._2;
 		return A3(_user$project$Main$checkBoundaries, playerPosition, playerSpeed, direction);
 	});
 var _user$project$Main$onFrame = F2(
 	function (time, model) {
-		var newComputerDirection = (_elm_lang$core$Native_Utils.cmp(model.ballX + model.ballDirectionX, model.computerX) < 0) ? _user$project$Main$Left : _user$project$Main$Right;
+		var newComputerDirection = (_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.computerX) < 0) ? _user$project$Main$Left : _user$project$Main$Right;
 		var _p10 = _user$project$Main$checkGoalScored(model);
 		var newPositionX = _p10._0;
 		var newPositionY = _p10._1;
@@ -11531,20 +11540,22 @@ var _user$project$Main$onFrame = F2(
 		var updateScorePlayer = _p10._3;
 		var updateBallDirectionX = _p10._4;
 		var updateBallDirectionY = _p10._5;
+		var newBallSpeed = _p10._6;
 		return {
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Native_Utils.update(
 				model,
 				{
-					playerX: A3(_user$project$Main$updatePlayer, model.playerDirection, model, _user$project$Main$Player),
-					computerX: A3(_user$project$Main$updatePlayer, model.computerDirection, model, _user$project$Main$Computer),
+					playerX: A2(_user$project$Main$updatePlayer, model, _user$project$Main$Player),
+					computerX: A2(_user$project$Main$updatePlayer, model, _user$project$Main$Computer),
 					ballX: newPositionX,
 					ballY: newPositionY,
 					ballDirectionX: updateBallDirectionX,
 					ballDirectionY: updateBallDirectionY,
 					computerDirection: newComputerDirection,
 					computerScore: model.computerScore + updateScoreComp,
-					playerScore: model.playerScore + updateScorePlayer
+					playerScore: model.playerScore + updateScorePlayer,
+					ballSpeed: newBallSpeed
 				}),
 			_1: _elm_lang$core$Platform_Cmd$none
 		};
@@ -11567,7 +11578,7 @@ var _user$project$Main$update = F2(
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			default:
+			case 'NewBallDirectionY':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -11575,6 +11586,14 @@ var _user$project$Main$update = F2(
 						{
 							ballDirectionY: A2(_user$project$Main$updateBallDirection, _p11._0, model.ballDirectionY)
 						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{ballSpeed: model.ballSpeed + 0.1}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
@@ -11712,6 +11731,9 @@ var _user$project$Main$view = function (model) {
 			}
 		});
 };
+var _user$project$Main$IncreaseBallSpeed = function (a) {
+	return {ctor: 'IncreaseBallSpeed', _0: a};
+};
 var _user$project$Main$NewBallDirectionY = function (a) {
 	return {ctor: 'NewBallDirectionY', _0: a};
 };
@@ -11735,7 +11757,11 @@ var _user$project$Main$subscriptions = function (model) {
 					function (time) {
 						return _user$project$Main$Step(time);
 					}),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second, _user$project$Main$IncreaseBallSpeed),
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };

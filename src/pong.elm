@@ -1,5 +1,3 @@
-            
-
 module Main exposing (..)
 
 import Html exposing (..)
@@ -11,6 +9,7 @@ import Char
 import Random
 import Svg
 import Random.Pcg as Rand
+
 
 main =
     Html.program
@@ -37,7 +36,10 @@ type Person
 
 
 type alias Model =
-    { playerX : Float
+    { ballSpeed : Float
+    , playerSpeed : Float
+    , computerSpeed : Float
+    , playerX : Float
     , playerY : Float
     , computerX : Float
     , computerY : Float
@@ -55,7 +57,10 @@ type alias Model =
 
 initModel : Model
 initModel =
-    { playerX = 40
+    { ballSpeed = 2.5
+    , playerSpeed = 4
+    , computerSpeed = 4
+    , playerX = 40
     , playerY = 420
     , computerX = 40
     , computerY = 10
@@ -63,8 +68,8 @@ initModel =
     , computerDirection = Still
     , ballX = 250
     , ballY = 250
-    , ballDirectionX = -4
-    , ballDirectionY = 4
+    , ballDirectionX = -1
+    , ballDirectionY = 1
     , playerScore = 0
     , computerScore = 0
     , keyboardModel = Keyboard.Extra.initialState
@@ -85,6 +90,7 @@ type Msg
     | Step Time.Time
     | NewBallDirectionX Int
     | NewBallDirectionY Int
+    | IncreaseBallSpeed Time.Time
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -96,21 +102,28 @@ update msg model =
         Step time ->
             onFrame time model
 
-        NewBallDirectionX newDirection-> 
-            ({ model | ballDirectionX = updateBallDirection newDirection model.ballDirectionX}, Cmd.none)
+        NewBallDirectionX newDirection ->
+            ( { model | ballDirectionX = updateBallDirection newDirection model.ballDirectionX }, Cmd.none )
 
-        NewBallDirectionY newDirection -> 
-            ({ model | ballDirectionY = updateBallDirection newDirection model.ballDirectionY}, Cmd.none)
+        NewBallDirectionY newDirection ->
+            ( { model | ballDirectionY = updateBallDirection newDirection model.ballDirectionY }, Cmd.none )
+
+        IncreaseBallSpeed _->
+            ( {model | ballSpeed = model.ballSpeed + 0.1}, Cmd.none)
+
 
 
 {- Step time -> onFrame time game -}
 
-updateBallDirection : Int -> Float -> Float
-updateBallDirection zeroOrOne modelDirection= 
-    case zeroOrOne of
-        1 -> modelDirection
-        _ -> -1 * modelDirection
 
+updateBallDirection : Int -> Float -> Float
+updateBallDirection zeroOrOne modelDirection =
+    case zeroOrOne of
+        1 ->
+            modelDirection
+
+        _ ->
+            -1 * modelDirection
 
 
 onUserInput : Keyboard.Extra.Msg -> Model -> ( Model, Cmd Msg )
@@ -147,56 +160,62 @@ onUserInput keyMsg model =
 onFrame : Time.Time -> Model -> ( Model, Cmd Msg )
 onFrame time model =
     let
-        ( newPositionX, newPositionY, updateScoreComp, updateScorePlayer, updateBallDirectionX,updateBallDirectionY  ) =
+        ( newPositionX, newPositionY, updateScoreComp, updateScorePlayer, updateBallDirectionX, updateBallDirectionY, newBallSpeed ) =
             checkGoalScored model
 
-        newComputerDirection = 
-            if model.ballX + model.ballDirectionX < model.computerX then Left
-            else Right
+        newComputerDirection =
+            if model.ballX + (model.ballDirectionX * model.ballSpeed) < model.computerX then
+                Left
+            else
+                Right
     in
         ( { model
-            | playerX = updatePlayer model.playerDirection model Player
-            , computerX = updatePlayer model.computerDirection model Computer
+            | playerX = updatePlayer model Player
+            , computerX = updatePlayer model Computer
             , ballX = newPositionX
             , ballY = newPositionY
             , ballDirectionX = updateBallDirectionX
-            , ballDirectionY = updateBallDirectionY 
+            , ballDirectionY = updateBallDirectionY
             , computerDirection = newComputerDirection
             , computerScore = model.computerScore + updateScoreComp
             , playerScore = model.playerScore + updateScorePlayer
+            , ballSpeed = newBallSpeed
           }
         , Cmd.none
         )
 
 
-checkGoalScored : Model -> ( Float, Float, Int, Int, Float, Float )
+checkGoalScored : Model -> ( Float, Float, Int, Int, Float, Float, Float )
 checkGoalScored model =
-    let 
-        firstSeed = 
-            Rand.initialSeed <| round (model.ballX * 1243433.3123443243)
-        (randX, newSeed) = 
-                    Rand.step (Rand.int 0 100) firstSeed
-        (randY, _) = 
-                    Rand.step (Rand.int 0 100) newSeed
-        (newBallDirX, newBallDirY) =
-                checkCollision model
-    in
-    if (model.ballY + model.ballDirectionY) <= -40 then
-        ( 250, 250, 0, 1, 4 * (negOneOrOne randX), 4 * (negOneOrOne randY) )
-    else if (model.ballY + model.ballDirectionY) >= 470 then
-        ( 250, 250, 1, 0, 4 * (negOneOrOne randX), 4 * (negOneOrOne randY) )
-    else
-        ( model.ballX + model.ballDirectionX, model.ballY + model.ballDirectionY, 0, 0, newBallDirX, newBallDirY)
-
-
-updatePlayer : Direction -> Model -> Person -> Float
-updatePlayer direction model person =
     let
-        (playerSpeed, playerPosition) =
+        firstSeed =
+            Rand.initialSeed <| round (model.ballX * 1243433.3123443243)
+
+        ( randX, newSeed ) =
+            Rand.step (Rand.int 0 100) firstSeed
+
+        ( randY, _ ) =
+            Rand.step (Rand.int 0 100) newSeed
+
+        ( newBallDirX, newBallDirY ) =
+            checkCollision model
+    in
+        if (model.ballY + model.ballDirectionY) <= -40 then
+            ( 250, 250, 0, 1, negOneOrOne randX, negOneOrOne randY, 2.5 )
+        else if (model.ballY + model.ballDirectionY) >= 470 then
+            ( 250, 250, 1, 0, negOneOrOne randX, negOneOrOne randY, 2.5 )
+        else
+            ( model.ballX + (model.ballDirectionX * model.ballSpeed), model.ballY + (model.ballDirectionY * model.ballSpeed), 0, 0, newBallDirX, newBallDirY, model.ballSpeed )
+
+
+updatePlayer : Model -> Person -> Float
+updatePlayer model person =
+    let
+        ( playerSpeed, playerPosition, direction ) =
             if person == Player then
-                (4, model.playerX)
+                ( model.playerSpeed, model.playerX, model.playerDirection )
             else
-                (3.99, model.computerX)
+                ( model.computerSpeed, model.computerX, model.computerDirection )
     in
         checkBoundaries playerPosition playerSpeed direction
 
@@ -220,54 +239,64 @@ checkBoundaries position change dir =
         else
             withChange
 
+
 checkCollision : Model -> ( Float, Float )
 checkCollision model =
     if
-        (model.ballX + model.ballDirectionX)
+        (model.ballX + (model.ballDirectionX * model.ballSpeed))
             <= 0
-            || (model.ballX + model.ballDirectionX)
+            || (model.ballX + (model.ballDirectionX * model.ballSpeed))
             >= 490
     then
         ( model.ballDirectionX * -1, model.ballDirectionY )
     else if
-        (model.ballY + model.ballDirectionY)
-            == 6
-            && (model.ballX + model.ballDirectionX)
+        (model.ballY + (model.ballDirectionY * model.ballSpeed))
+            >= 3
+            && (model.ballY + (model.ballDirectionY * model.ballSpeed))
+            <= 9
+            && (model.ballX + (model.ballDirectionX * model.ballSpeed))
             >= model.computerX
             - 15
-            && (model.ballX + model.ballDirectionX)
+            && (model.ballX + (model.ballDirectionX * model.ballSpeed))
             <= (model.computerX + 100)
     then
         if
-            (model.computerDirection == Right && model.ballDirectionX < 0)
-                || (model.computerDirection == Left && model.ballDirectionX > 0)
+            (model.computerDirection == Right && (model.ballDirectionX * model.ballSpeed) < 0)
+                || (model.computerDirection == Left && (model.ballDirectionX * model.ballSpeed) > 0)
         then
             ( model.ballDirectionX * -1, model.ballDirectionY * -1 )
         else
             ( model.ballDirectionX, model.ballDirectionY * -1 )
     else if
-        (model.ballY + model.ballDirectionY + 15)
-            == 441
-            && (model.ballX + model.ballDirectionX)
+        (model.ballY + (model.ballDirectionY * model.ballSpeed) + 15)
+            >= 438
+            && (model.ballY + (model.ballDirectionY * model.ballSpeed) + 15)
+            <= 444
+            && (model.ballX + (model.ballDirectionX * model.ballSpeed))
             >= model.playerX
             - 15
-            && (model.ballX + model.ballDirectionX)
+            && (model.ballX + (model.ballDirectionX * model.ballSpeed))
             <= (model.playerX + 100)
     then
         if
-            (model.playerDirection == Right && model.ballDirectionX < 0)
-                || (model.playerDirection == Left && model.ballDirectionX > 0)
+            (model.playerDirection == Right && (model.ballDirectionX * model.ballSpeed) < 0)
+                || (model.playerDirection == Left && (model.ballDirectionX * model.ballSpeed) > 0)
         then
             ( model.ballDirectionX * -1, model.ballDirectionY * -1 )
         else
             ( model.ballDirectionX, model.ballDirectionY * -1 )
     else
-        ( model.ballDirectionX, model.ballDirectionY)
+        ( model.ballDirectionX, model.ballDirectionY )
+
 
 negOneOrOne : Int -> Float
 negOneOrOne randInt =
-    if randInt > 50 then 1.0
-    else -1.0
+    if randInt > 50 then
+        1.0
+    else
+        -1.0
+
+
 
 -- Subscriptions
 
@@ -277,6 +306,7 @@ subscriptions model =
     Sub.batch
         [ Sub.map KeyboardExtraMsg Keyboard.Extra.subscriptions
         , AnimationFrame.times (\time -> Step time)
+        , Time.every Time.second IncreaseBallSpeed
         ]
 
 
@@ -286,59 +316,61 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-    div [class "container"
-        , style [
-            ("width", "100%")
-            , ("height", "100%")
+    div
+        [ class "container"
+        , style
+            [ ( "width", "100%" )
+            , ( "height", "100%" )
+            ]
         ]
-    ]
-    [
-     heading
-     , div [class "row"] [ 
-        score_ model.playerScore Player
-     , gameArea model
-     , score_ model.computerScore Computer
-     ]
-    ]
+        [ heading
+        , div [ class "row" ]
+            [ score_ model.playerScore Player
+            , gameArea model
+            , score_ model.computerScore Computer
+            ]
+        ]
 
 
 gameArea : Model -> Html Msg
 gameArea model =
-    div [class "col-sm-6 text-center", style [ ("background-color", "white") ]] [
-    div
-        [ class "text-center", 
-        style
-            [ ( "width", "500px" )
-            , ( "height", "500px" )
-            , ("text-align", "center")
-            , ("display", "inline-block")
-            , ( "border-color", "black" )
-            , ( "border-width", "3px" )
-            , ( "border-style", "solid" )
-            , ( "background-color", "black" )
-            , ( "color", "white" )
+    div [ class "col-sm-6 text-center", style [ ( "background-color", "white" ) ] ]
+        [ div
+            [ class "text-center"
+            , style
+                [ ( "width", "500px" )
+                , ( "height", "500px" )
+                , ( "text-align", "center" )
+                , ( "display", "inline-block" )
+                , ( "border-color", "black" )
+                , ( "border-width", "3px" )
+                , ( "border-style", "solid" )
+                , ( "background-color", "black" )
+                , ( "color", "white" )
+                ]
+            ]
+            [ paddle_ model Computer
+            , ball_ model
+            , paddle_ model Player
             ]
         ]
-        [ paddle_ model Computer
-        , ball_ model
-        , paddle_ model Player
-        ]
-        ]
+
 
 heading : Html Msg
 heading =
-    div [class "row"] [
-    div
-        [ class "col-sm-12"
-        , style
-            [ ( "font-family", "Faster One" )
-            , ( "text-align", "center" )
-            , ( "color", "black" )
-            , ( "font-size", "300%" )
+    div [ class "row" ]
+        [ div
+            [ class "col-sm-12"
+            , style
+                [ ( "font-family", "Faster One" )
+                , ( "text-align", "center" )
+                , ( "color", "black" )
+                , ( "font-size", "300%" )
+                ]
             ]
+            [ text "PONG" ]
         ]
-        [ text "PONG" ]
-        ]
+
 
 paddle_ : Model -> Person -> Html Msg
 paddle_ model person =
@@ -382,19 +414,20 @@ ball_ model =
 score_ : Int -> Person -> Html Msg
 score_ scoreValue person =
     let
-        (scorePlacement, classAddition) =
+        ( scorePlacement, classAddition ) =
             case person of
                 Player ->
-                    ("50px", "text-right")
+                    ( "50px", "text-right" )
 
                 Computer ->
-                    ("845px", "text-left")
+                    ( "845px", "text-left" )
     in
         div
             [ class ("col-sm-3 " ++ classAddition)
-             , style
+            , style
                 [ ( "background-color", "white" )
                 , ( "color", "black" )
+
                 --, ( "text-align", "center" )
                 , ( "font-family", "Monofett" )
                 , ( "font-size", "400%" )

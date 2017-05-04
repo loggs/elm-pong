@@ -9,6 +9,7 @@ import Char
 import Random
 import Svg
 import Random.Pcg as Rand
+import Html.Events exposing (onClick)
 
 
 main =
@@ -34,6 +35,7 @@ type Person
     = Player
     | Computer
 
+type Difficulty = Easy | Medium | Hard
 
 type alias Model =
     { ballSpeed : Float
@@ -52,6 +54,7 @@ type alias Model =
     , keyboardModel : Keyboard.Extra.State
     , playerScore : Int
     , computerScore : Int
+    , computerDifficulty : Difficulty
     }
 
 
@@ -59,7 +62,7 @@ initModel : Model
 initModel =
     { ballSpeed = 2.5
     , playerSpeed = 4
-    , computerSpeed = 4
+    , computerSpeed = 7
     , playerX = 40
     , playerY = 420
     , computerX = 40
@@ -73,6 +76,7 @@ initModel =
     , playerScore = 0
     , computerScore = 0
     , keyboardModel = Keyboard.Extra.initialState
+    , computerDifficulty = Easy
     }
 
 
@@ -91,6 +95,7 @@ type Msg
     | NewBallDirectionX Int
     | NewBallDirectionY Int
     | IncreaseBallSpeed Time.Time
+    | ChangeDifficulty Difficulty
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -110,6 +115,9 @@ update msg model =
 
         IncreaseBallSpeed _->
             ( {model | ballSpeed = model.ballSpeed + 0.1}, Cmd.none)
+
+        ChangeDifficulty newDifficulty -> 
+            ({model | computerDifficulty = newDifficulty, ballSpeed = 2.5, playerScore = 0, computerScore = 0, ballX = 250, ballY = 250}, Cmd.none)
 
 
 
@@ -164,8 +172,11 @@ onFrame time model =
             checkGoalScored model
 
         newComputerDirection =
-            if model.ballX + (model.ballDirectionX * model.ballSpeed) < model.computerX then
+            if model.ballX + (model.ballDirectionX * model.ballSpeed) < model.computerX + 40 then
                 Left
+            else if model.ballX + (model.ballDirectionX * model.ballSpeed) > model.computerX && 
+                model.ballX + (model.ballDirectionX * model.ballSpeed) < model.computerX + 60
+                then Still
             else
                 Right
     in
@@ -205,17 +216,22 @@ checkGoalScored model =
         else if (model.ballY + model.ballDirectionY) >= 470 then
             ( 250, 250, 1, 0, negOneOrOne randX, negOneOrOne randY, 2.5 )
         else
-            ( model.ballX + (model.ballDirectionX * model.ballSpeed), model.ballY + (model.ballDirectionY * model.ballSpeed), 0, 0, newBallDirX, newBallDirY, model.ballSpeed )
+            ( model.ballX + (model.ballDirectionX * model.ballSpeed), model.ballY + (model.ballDirectionY * model.ballSpeed), 0, 0, newBallDirX, newBallDirY, model.ballSpeed)
 
 
 updatePlayer : Model -> Person -> Float
 updatePlayer model person =
     let
+        difficultyChange =
+            case model.computerDifficulty of
+                Easy -> -0.07
+                Medium -> 0.5
+                Hard -> 1
         ( playerSpeed, playerPosition, direction ) =
             if person == Player then
                 ( model.playerSpeed, model.playerX, model.playerDirection )
             else
-                ( model.computerSpeed, model.computerX, model.computerDirection )
+                ( model.ballSpeed + difficultyChange, model.computerX, model.computerDirection )
     in
         checkBoundaries playerPosition playerSpeed direction
 
@@ -246,14 +262,14 @@ checkCollision model =
         (model.ballX + (model.ballDirectionX * model.ballSpeed))
             <= 0
             || (model.ballX + (model.ballDirectionX * model.ballSpeed))
-            >= 490
+            >= 480
     then
         ( model.ballDirectionX * -1, model.ballDirectionY )
     else if
         (model.ballY + (model.ballDirectionY * model.ballSpeed))
-            >= 3
+            >= 2
             && (model.ballY + (model.ballDirectionY * model.ballSpeed))
-            <= 9
+            <= 12
             && (model.ballX + (model.ballDirectionX * model.ballSpeed))
             >= model.computerX
             - 15
@@ -269,9 +285,9 @@ checkCollision model =
             ( model.ballDirectionX, model.ballDirectionY * -1 )
     else if
         (model.ballY + (model.ballDirectionY * model.ballSpeed) + 15)
-            >= 438
+            >= 435
             && (model.ballY + (model.ballDirectionY * model.ballSpeed) + 15)
-            <= 444
+            <= 445
             && (model.ballX + (model.ballDirectionX * model.ballSpeed))
             >= model.playerX
             - 15
@@ -328,6 +344,9 @@ view model =
             [ score_ model.playerScore Player
             , gameArea model
             , score_ model.computerScore Computer
+            , button_ Easy
+            , button_ Medium
+            , button_ Hard
             ]
         ]
 
@@ -437,3 +456,7 @@ score_ scoreValue person =
             , br [] []
             , text <| toString scoreValue
             ]
+
+button_ : Difficulty -> Html Msg
+button_ buttonText =
+    button [ onClick <| ChangeDifficulty buttonText ] [text <| toString buttonText]

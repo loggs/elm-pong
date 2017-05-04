@@ -9313,6 +9313,121 @@ var _elm_lang$html$Html_Attributes$classList = function (list) {
 };
 var _elm_lang$html$Html_Attributes$style = _elm_lang$virtual_dom$VirtualDom$style;
 
+var _elm_lang$html$Html_Events$keyCode = A2(_elm_lang$core$Json_Decode$field, 'keyCode', _elm_lang$core$Json_Decode$int);
+var _elm_lang$html$Html_Events$targetChecked = A2(
+	_elm_lang$core$Json_Decode$at,
+	{
+		ctor: '::',
+		_0: 'target',
+		_1: {
+			ctor: '::',
+			_0: 'checked',
+			_1: {ctor: '[]'}
+		}
+	},
+	_elm_lang$core$Json_Decode$bool);
+var _elm_lang$html$Html_Events$targetValue = A2(
+	_elm_lang$core$Json_Decode$at,
+	{
+		ctor: '::',
+		_0: 'target',
+		_1: {
+			ctor: '::',
+			_0: 'value',
+			_1: {ctor: '[]'}
+		}
+	},
+	_elm_lang$core$Json_Decode$string);
+var _elm_lang$html$Html_Events$defaultOptions = _elm_lang$virtual_dom$VirtualDom$defaultOptions;
+var _elm_lang$html$Html_Events$onWithOptions = _elm_lang$virtual_dom$VirtualDom$onWithOptions;
+var _elm_lang$html$Html_Events$on = _elm_lang$virtual_dom$VirtualDom$on;
+var _elm_lang$html$Html_Events$onFocus = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'focus',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onBlur = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'blur',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onSubmitOptions = _elm_lang$core$Native_Utils.update(
+	_elm_lang$html$Html_Events$defaultOptions,
+	{preventDefault: true});
+var _elm_lang$html$Html_Events$onSubmit = function (msg) {
+	return A3(
+		_elm_lang$html$Html_Events$onWithOptions,
+		'submit',
+		_elm_lang$html$Html_Events$onSubmitOptions,
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onCheck = function (tagger) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'change',
+		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$targetChecked));
+};
+var _elm_lang$html$Html_Events$onInput = function (tagger) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'input',
+		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$targetValue));
+};
+var _elm_lang$html$Html_Events$onMouseOut = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseout',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseOver = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseover',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseLeave = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseleave',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseEnter = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseenter',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseUp = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseup',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseDown = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mousedown',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onDoubleClick = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'dblclick',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onClick = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'click',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$Options = F2(
+	function (a, b) {
+		return {stopPropagation: a, preventDefault: b};
+	});
+
 var _elm_lang$keyboard$Keyboard$onSelfMsg = F3(
 	function (router, _p0, state) {
 		var _p1 = _p0;
@@ -11395,7 +11510,9 @@ var _user$project$Main$Model = function (a) {
 													return function (n) {
 														return function (o) {
 															return function (p) {
-																return {ballSpeed: a, playerSpeed: b, computerSpeed: c, playerX: d, playerY: e, computerX: f, computerY: g, playerDirection: h, computerDirection: i, ballX: j, ballY: k, ballDirectionX: l, ballDirectionY: m, keyboardModel: n, playerScore: o, computerScore: p};
+																return function (q) {
+																	return {ballSpeed: a, playerSpeed: b, computerSpeed: c, playerX: d, playerY: e, computerX: f, computerY: g, playerDirection: h, computerDirection: i, ballX: j, ballY: k, ballDirectionX: l, ballDirectionY: m, keyboardModel: n, playerScore: o, computerScore: p, computerDifficulty: q};
+																};
 															};
 														};
 													};
@@ -11413,8 +11530,6 @@ var _user$project$Main$Model = function (a) {
 	};
 };
 var _user$project$Main$Still = {ctor: 'Still'};
-var _user$project$Main$initModel = {ballSpeed: 2.5, playerSpeed: 4, computerSpeed: 4, playerX: 40, playerY: 420, computerX: 40, computerY: 10, playerDirection: _user$project$Main$Still, computerDirection: _user$project$Main$Still, ballX: 250, ballY: 250, ballDirectionX: -1, ballDirectionY: 1, playerScore: 0, computerScore: 0, keyboardModel: _ohanhi$keyboard_extra$Keyboard_Extra$initialState};
-var _user$project$Main$init = {ctor: '_Tuple2', _0: _user$project$Main$initModel, _1: _elm_lang$core$Platform_Cmd$none};
 var _user$project$Main$Right = {ctor: 'Right'};
 var _user$project$Main$Left = {ctor: 'Left'};
 var _user$project$Main$onUserInput = F2(
@@ -11481,7 +11596,7 @@ var _user$project$Main$checkBoundaries = F3(
 		return A2(comparison, maxValue, withChange) ? position : withChange;
 	});
 var _user$project$Main$checkCollision = function (model) {
-	return ((_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), 0) < 1) || (_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), 490) > -1)) ? {ctor: '_Tuple2', _0: model.ballDirectionX * -1, _1: model.ballDirectionY} : (((_elm_lang$core$Native_Utils.cmp(model.ballY + (model.ballDirectionY * model.ballSpeed), 3) > -1) && ((_elm_lang$core$Native_Utils.cmp(model.ballY + (model.ballDirectionY * model.ballSpeed), 9) < 1) && ((_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.computerX - 15) > -1) && (_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.computerX + 100) < 1)))) ? (((_elm_lang$core$Native_Utils.eq(model.computerDirection, _user$project$Main$Right) && (_elm_lang$core$Native_Utils.cmp(model.ballDirectionX * model.ballSpeed, 0) < 0)) || (_elm_lang$core$Native_Utils.eq(model.computerDirection, _user$project$Main$Left) && (_elm_lang$core$Native_Utils.cmp(model.ballDirectionX * model.ballSpeed, 0) > 0))) ? {ctor: '_Tuple2', _0: model.ballDirectionX * -1, _1: model.ballDirectionY * -1} : {ctor: '_Tuple2', _0: model.ballDirectionX, _1: model.ballDirectionY * -1}) : (((_elm_lang$core$Native_Utils.cmp((model.ballY + (model.ballDirectionY * model.ballSpeed)) + 15, 438) > -1) && ((_elm_lang$core$Native_Utils.cmp((model.ballY + (model.ballDirectionY * model.ballSpeed)) + 15, 444) < 1) && ((_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.playerX - 15) > -1) && (_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.playerX + 100) < 1)))) ? (((_elm_lang$core$Native_Utils.eq(model.playerDirection, _user$project$Main$Right) && (_elm_lang$core$Native_Utils.cmp(model.ballDirectionX * model.ballSpeed, 0) < 0)) || (_elm_lang$core$Native_Utils.eq(model.playerDirection, _user$project$Main$Left) && (_elm_lang$core$Native_Utils.cmp(model.ballDirectionX * model.ballSpeed, 0) > 0))) ? {ctor: '_Tuple2', _0: model.ballDirectionX * -1, _1: model.ballDirectionY * -1} : {ctor: '_Tuple2', _0: model.ballDirectionX, _1: model.ballDirectionY * -1}) : {ctor: '_Tuple2', _0: model.ballDirectionX, _1: model.ballDirectionY}));
+	return ((_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), 0) < 1) || (_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), 480) > -1)) ? {ctor: '_Tuple2', _0: model.ballDirectionX * -1, _1: model.ballDirectionY} : (((_elm_lang$core$Native_Utils.cmp(model.ballY + (model.ballDirectionY * model.ballSpeed), 2) > -1) && ((_elm_lang$core$Native_Utils.cmp(model.ballY + (model.ballDirectionY * model.ballSpeed), 12) < 1) && ((_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.computerX - 15) > -1) && (_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.computerX + 100) < 1)))) ? (((_elm_lang$core$Native_Utils.eq(model.computerDirection, _user$project$Main$Right) && (_elm_lang$core$Native_Utils.cmp(model.ballDirectionX * model.ballSpeed, 0) < 0)) || (_elm_lang$core$Native_Utils.eq(model.computerDirection, _user$project$Main$Left) && (_elm_lang$core$Native_Utils.cmp(model.ballDirectionX * model.ballSpeed, 0) > 0))) ? {ctor: '_Tuple2', _0: model.ballDirectionX * -1, _1: model.ballDirectionY * -1} : {ctor: '_Tuple2', _0: model.ballDirectionX, _1: model.ballDirectionY * -1}) : (((_elm_lang$core$Native_Utils.cmp((model.ballY + (model.ballDirectionY * model.ballSpeed)) + 15, 435) > -1) && ((_elm_lang$core$Native_Utils.cmp((model.ballY + (model.ballDirectionY * model.ballSpeed)) + 15, 445) < 1) && ((_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.playerX - 15) > -1) && (_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.playerX + 100) < 1)))) ? (((_elm_lang$core$Native_Utils.eq(model.playerDirection, _user$project$Main$Right) && (_elm_lang$core$Native_Utils.cmp(model.ballDirectionX * model.ballSpeed, 0) < 0)) || (_elm_lang$core$Native_Utils.eq(model.playerDirection, _user$project$Main$Left) && (_elm_lang$core$Native_Utils.cmp(model.ballDirectionX * model.ballSpeed, 0) > 0))) ? {ctor: '_Tuple2', _0: model.ballDirectionX * -1, _1: model.ballDirectionY * -1} : {ctor: '_Tuple2', _0: model.ballDirectionX, _1: model.ballDirectionY * -1}) : {ctor: '_Tuple2', _0: model.ballDirectionX, _1: model.ballDirectionY}));
 };
 var _user$project$Main$checkGoalScored = function (model) {
 	var _p6 = _user$project$Main$checkCollision(model);
@@ -11524,23 +11639,34 @@ var _user$project$Main$Computer = {ctor: 'Computer'};
 var _user$project$Main$Player = {ctor: 'Player'};
 var _user$project$Main$updatePlayer = F2(
 	function (model, person) {
-		var _p9 = _elm_lang$core$Native_Utils.eq(person, _user$project$Main$Player) ? {ctor: '_Tuple3', _0: model.playerSpeed, _1: model.playerX, _2: model.playerDirection} : {ctor: '_Tuple3', _0: model.computerSpeed, _1: model.computerX, _2: model.computerDirection};
-		var playerSpeed = _p9._0;
-		var playerPosition = _p9._1;
-		var direction = _p9._2;
+		var difficultyChange = function () {
+			var _p9 = model.computerDifficulty;
+			switch (_p9.ctor) {
+				case 'Easy':
+					return -7.0e-2;
+				case 'Medium':
+					return 0.5;
+				default:
+					return 1;
+			}
+		}();
+		var _p10 = _elm_lang$core$Native_Utils.eq(person, _user$project$Main$Player) ? {ctor: '_Tuple3', _0: model.playerSpeed, _1: model.playerX, _2: model.playerDirection} : {ctor: '_Tuple3', _0: model.ballSpeed + difficultyChange, _1: model.computerX, _2: model.computerDirection};
+		var playerSpeed = _p10._0;
+		var playerPosition = _p10._1;
+		var direction = _p10._2;
 		return A3(_user$project$Main$checkBoundaries, playerPosition, playerSpeed, direction);
 	});
 var _user$project$Main$onFrame = F2(
 	function (time, model) {
-		var newComputerDirection = (_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.computerX) < 0) ? _user$project$Main$Left : _user$project$Main$Right;
-		var _p10 = _user$project$Main$checkGoalScored(model);
-		var newPositionX = _p10._0;
-		var newPositionY = _p10._1;
-		var updateScoreComp = _p10._2;
-		var updateScorePlayer = _p10._3;
-		var updateBallDirectionX = _p10._4;
-		var updateBallDirectionY = _p10._5;
-		var newBallSpeed = _p10._6;
+		var newComputerDirection = (_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.computerX + 40) < 0) ? _user$project$Main$Left : (((_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.computerX) > 0) && (_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.computerX + 60) < 0)) ? _user$project$Main$Still : _user$project$Main$Right);
+		var _p11 = _user$project$Main$checkGoalScored(model);
+		var newPositionX = _p11._0;
+		var newPositionY = _p11._1;
+		var updateScoreComp = _p11._2;
+		var updateScorePlayer = _p11._3;
+		var updateBallDirectionX = _p11._4;
+		var updateBallDirectionY = _p11._5;
+		var newBallSpeed = _p11._6;
 		return {
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Native_Utils.update(
@@ -11562,19 +11688,19 @@ var _user$project$Main$onFrame = F2(
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p11 = msg;
-		switch (_p11.ctor) {
+		var _p12 = msg;
+		switch (_p12.ctor) {
 			case 'KeyboardExtraMsg':
-				return A2(_user$project$Main$onUserInput, _p11._0, model);
+				return A2(_user$project$Main$onUserInput, _p12._0, model);
 			case 'Step':
-				return A2(_user$project$Main$onFrame, _p11._0, model);
+				return A2(_user$project$Main$onFrame, _p12._0, model);
 			case 'NewBallDirectionX':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							ballDirectionX: A2(_user$project$Main$updateBallDirection, _p11._0, model.ballDirectionX)
+							ballDirectionX: A2(_user$project$Main$updateBallDirection, _p12._0, model.ballDirectionX)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -11584,8 +11710,16 @@ var _user$project$Main$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							ballDirectionY: A2(_user$project$Main$updateBallDirection, _p11._0, model.ballDirectionY)
+							ballDirectionY: A2(_user$project$Main$updateBallDirection, _p12._0, model.ballDirectionY)
 						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'IncreaseBallSpeed':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{ballSpeed: model.ballSpeed + 0.1}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			default:
@@ -11593,7 +11727,7 @@ var _user$project$Main$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{ballSpeed: model.ballSpeed + 0.1}),
+						{computerDifficulty: _p12._0, ballSpeed: 2.5, playerScore: 0, computerScore: 0, ballX: 250, ballY: 250}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
@@ -11681,6 +11815,30 @@ var _user$project$Main$gameArea = function (model) {
 			_1: {ctor: '[]'}
 		});
 };
+var _user$project$Main$Hard = {ctor: 'Hard'};
+var _user$project$Main$Medium = {ctor: 'Medium'};
+var _user$project$Main$Easy = {ctor: 'Easy'};
+var _user$project$Main$initModel = {ballSpeed: 2.5, playerSpeed: 4, computerSpeed: 7, playerX: 40, playerY: 420, computerX: 40, computerY: 10, playerDirection: _user$project$Main$Still, computerDirection: _user$project$Main$Still, ballX: 250, ballY: 250, ballDirectionX: -1, ballDirectionY: 1, playerScore: 0, computerScore: 0, keyboardModel: _ohanhi$keyboard_extra$Keyboard_Extra$initialState, computerDifficulty: _user$project$Main$Easy};
+var _user$project$Main$init = {ctor: '_Tuple2', _0: _user$project$Main$initModel, _1: _elm_lang$core$Platform_Cmd$none};
+var _user$project$Main$ChangeDifficulty = function (a) {
+	return {ctor: 'ChangeDifficulty', _0: a};
+};
+var _user$project$Main$button_ = function (buttonText) {
+	return A2(
+		_elm_lang$html$Html$button,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Events$onClick(
+				_user$project$Main$ChangeDifficulty(buttonText)),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(
+				_elm_lang$core$Basics$toString(buttonText)),
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -11723,7 +11881,19 @@ var _user$project$Main$view = function (model) {
 							_1: {
 								ctor: '::',
 								_0: A2(_user$project$Main$score_, model.computerScore, _user$project$Main$Computer),
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: _user$project$Main$button_(_user$project$Main$Easy),
+									_1: {
+										ctor: '::',
+										_0: _user$project$Main$button_(_user$project$Main$Medium),
+										_1: {
+											ctor: '::',
+											_0: _user$project$Main$button_(_user$project$Main$Hard),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
 							}
 						}
 					}),

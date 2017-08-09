@@ -10,9 +10,21 @@
 	</head>
 	<body>
 		<div id="main"></div>
+		<canvas id="holdImage"></canvas>
 		<script>
-		    var node = document.getElementById('main');
-		    var app = Elm.Main.embed(node);
+		    let node = document.getElementById('main');
+		    let app = Elm.Main.embed(node);
+		    app.ports.sendGameBoard.subscribe(function (gameAreaString) {
+		    	let c = document.getElementById('holdImage')
+		    	let ctx = c.getContext('2d')
+		    	let DOMURL = window.URL || window.webkitURL || window;
+		    	var img = new Image();
+				let svg = new Blob([gameAreaString], {type: 'image/svg+xml'});
+				let url = DOMURL.createObjectURL(svg);
+				ctx.drawImage(img, 0, 0);
+  				DOMURL.revokeObjectURL(url);
+		    	console.log(ctx.getImageData(0, 0, 500, 500))
+		    });
 		</script>
 	</body>
 </html>

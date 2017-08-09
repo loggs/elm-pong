@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -11,7 +11,6 @@ import Svg
 import Random.Pcg as Rand
 import Html.Events exposing (onClick)
 
-
 main =
     Html.program
         { init = init
@@ -20,7 +19,10 @@ main =
         , subscriptions = subscriptions
         }
 
+---- Ports
+port sendGameBoard : String -> Cmd msg
 
+--port updateComputerDirection : (String -> Msg) -> Sub Msg
 
 -- MODEL
 
@@ -35,7 +37,11 @@ type Person
     = Player
     | Computer
 
-type Difficulty = Easy | Medium | Hard
+type Difficulty
+     = Easy 
+     | Medium 
+     | Hard 
+     | NeuralNet
 
 type alias Model =
     { ballSpeed : Float
@@ -55,6 +61,7 @@ type alias Model =
     , playerScore : Int
     , computerScore : Int
     , computerDifficulty : Difficulty
+    , gameAreaString : String
     }
 
 
@@ -77,6 +84,7 @@ initModel =
     , computerScore = 0
     , keyboardModel = Keyboard.Extra.initialState
     , computerDifficulty = Easy
+    , gameAreaString = ""
     }
 
 
@@ -114,7 +122,7 @@ update msg model =
             ( { model | ballDirectionY = updateBallDirection newDirection model.ballDirectionY }, Cmd.none )
 
         IncreaseBallSpeed _->
-            ( {model | ballSpeed = model.ballSpeed + 0.1}, Cmd.none)
+            ( {model | ballSpeed = model.ballSpeed + 0.1}, sendGameBoard model.gameAreaString)
 
         ChangeDifficulty newDifficulty -> 
             ({model | computerDifficulty = newDifficulty, ballSpeed = 2.5, playerScore = 0, computerScore = 0, ballX = 250, ballY = 250}, Cmd.none)
@@ -191,6 +199,7 @@ onFrame time model =
             , computerScore = model.computerScore + updateScoreComp
             , playerScore = model.playerScore + updateScorePlayer
             , ballSpeed = newBallSpeed
+            , gameAreaString = toString <| gameArea model
           }
         , Cmd.none
         )
@@ -227,6 +236,7 @@ updatePlayer model person =
                 Easy -> -0.07
                 Medium -> 0.5
                 Hard -> 1
+                NeuralNet -> 1
         ( playerSpeed, playerPosition, direction ) =
             if person == Player then
                 ( model.playerSpeed, model.playerX, model.playerDirection )
@@ -347,6 +357,7 @@ view model =
             , button_ Easy
             , button_ Medium
             , button_ Hard
+            , button_ NeuralNet
             ]
         ]
 

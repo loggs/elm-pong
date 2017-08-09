@@ -11494,6 +11494,11 @@ var _user$project$Main$updateBallDirection = F2(
 			return -1 * modelDirection;
 		}
 	});
+var _user$project$Main$sendGameBoard = _elm_lang$core$Native_Platform.outgoingPort(
+	'sendGameBoard',
+	function (v) {
+		return v;
+	});
 var _user$project$Main$Model = function (a) {
 	return function (b) {
 		return function (c) {
@@ -11511,7 +11516,9 @@ var _user$project$Main$Model = function (a) {
 														return function (o) {
 															return function (p) {
 																return function (q) {
-																	return {ballSpeed: a, playerSpeed: b, computerSpeed: c, playerX: d, playerY: e, computerX: f, computerY: g, playerDirection: h, computerDirection: i, ballX: j, ballY: k, ballDirectionX: l, ballDirectionY: m, keyboardModel: n, playerScore: o, computerScore: p, computerDifficulty: q};
+																	return function (r) {
+																		return {ballSpeed: a, playerSpeed: b, computerSpeed: c, playerX: d, playerY: e, computerX: f, computerY: g, playerDirection: h, computerDirection: i, ballX: j, ballY: k, ballDirectionX: l, ballDirectionY: m, keyboardModel: n, playerScore: o, computerScore: p, computerDifficulty: q, gameAreaString: r};
+																	};
 																};
 															};
 														};
@@ -11646,6 +11653,8 @@ var _user$project$Main$updatePlayer = F2(
 					return -7.0e-2;
 				case 'Medium':
 					return 0.5;
+				case 'Hard':
+					return 1;
 				default:
 					return 1;
 			}
@@ -11655,82 +11664,6 @@ var _user$project$Main$updatePlayer = F2(
 		var playerPosition = _p10._1;
 		var direction = _p10._2;
 		return A3(_user$project$Main$checkBoundaries, playerPosition, playerSpeed, direction);
-	});
-var _user$project$Main$onFrame = F2(
-	function (time, model) {
-		var newComputerDirection = (_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.computerX + 40) < 0) ? _user$project$Main$Left : (((_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.computerX) > 0) && (_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.computerX + 60) < 0)) ? _user$project$Main$Still : _user$project$Main$Right);
-		var _p11 = _user$project$Main$checkGoalScored(model);
-		var newPositionX = _p11._0;
-		var newPositionY = _p11._1;
-		var updateScoreComp = _p11._2;
-		var updateScorePlayer = _p11._3;
-		var updateBallDirectionX = _p11._4;
-		var updateBallDirectionY = _p11._5;
-		var newBallSpeed = _p11._6;
-		return {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				model,
-				{
-					playerX: A2(_user$project$Main$updatePlayer, model, _user$project$Main$Player),
-					computerX: A2(_user$project$Main$updatePlayer, model, _user$project$Main$Computer),
-					ballX: newPositionX,
-					ballY: newPositionY,
-					ballDirectionX: updateBallDirectionX,
-					ballDirectionY: updateBallDirectionY,
-					computerDirection: newComputerDirection,
-					computerScore: model.computerScore + updateScoreComp,
-					playerScore: model.playerScore + updateScorePlayer,
-					ballSpeed: newBallSpeed
-				}),
-			_1: _elm_lang$core$Platform_Cmd$none
-		};
-	});
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		var _p12 = msg;
-		switch (_p12.ctor) {
-			case 'KeyboardExtraMsg':
-				return A2(_user$project$Main$onUserInput, _p12._0, model);
-			case 'Step':
-				return A2(_user$project$Main$onFrame, _p12._0, model);
-			case 'NewBallDirectionX':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							ballDirectionX: A2(_user$project$Main$updateBallDirection, _p12._0, model.ballDirectionX)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'NewBallDirectionY':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							ballDirectionY: A2(_user$project$Main$updateBallDirection, _p12._0, model.ballDirectionY)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'IncreaseBallSpeed':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{ballSpeed: model.ballSpeed + 0.1}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			default:
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{computerDifficulty: _p12._0, ballSpeed: 2.5, playerScore: 0, computerScore: 0, ballX: 250, ballY: 250}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-		}
 	});
 var _user$project$Main$gameArea = function (model) {
 	return A2(
@@ -11815,10 +11748,89 @@ var _user$project$Main$gameArea = function (model) {
 			_1: {ctor: '[]'}
 		});
 };
+var _user$project$Main$onFrame = F2(
+	function (time, model) {
+		var newComputerDirection = (_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.computerX + 40) < 0) ? _user$project$Main$Left : (((_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.computerX) > 0) && (_elm_lang$core$Native_Utils.cmp(model.ballX + (model.ballDirectionX * model.ballSpeed), model.computerX + 60) < 0)) ? _user$project$Main$Still : _user$project$Main$Right);
+		var _p11 = _user$project$Main$checkGoalScored(model);
+		var newPositionX = _p11._0;
+		var newPositionY = _p11._1;
+		var updateScoreComp = _p11._2;
+		var updateScorePlayer = _p11._3;
+		var updateBallDirectionX = _p11._4;
+		var updateBallDirectionY = _p11._5;
+		var newBallSpeed = _p11._6;
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Native_Utils.update(
+				model,
+				{
+					playerX: A2(_user$project$Main$updatePlayer, model, _user$project$Main$Player),
+					computerX: A2(_user$project$Main$updatePlayer, model, _user$project$Main$Computer),
+					ballX: newPositionX,
+					ballY: newPositionY,
+					ballDirectionX: updateBallDirectionX,
+					ballDirectionY: updateBallDirectionY,
+					computerDirection: newComputerDirection,
+					computerScore: model.computerScore + updateScoreComp,
+					playerScore: model.playerScore + updateScorePlayer,
+					ballSpeed: newBallSpeed,
+					gameAreaString: _elm_lang$core$Basics$toString(
+						_user$project$Main$gameArea(model))
+				}),
+			_1: _elm_lang$core$Platform_Cmd$none
+		};
+	});
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p12 = msg;
+		switch (_p12.ctor) {
+			case 'KeyboardExtraMsg':
+				return A2(_user$project$Main$onUserInput, _p12._0, model);
+			case 'Step':
+				return A2(_user$project$Main$onFrame, _p12._0, model);
+			case 'NewBallDirectionX':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							ballDirectionX: A2(_user$project$Main$updateBallDirection, _p12._0, model.ballDirectionX)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'NewBallDirectionY':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							ballDirectionY: A2(_user$project$Main$updateBallDirection, _p12._0, model.ballDirectionY)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'IncreaseBallSpeed':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{ballSpeed: model.ballSpeed + 0.1}),
+					_1: _user$project$Main$sendGameBoard(model.gameAreaString)
+				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{computerDifficulty: _p12._0, ballSpeed: 2.5, playerScore: 0, computerScore: 0, ballX: 250, ballY: 250}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+		}
+	});
+var _user$project$Main$NeuralNet = {ctor: 'NeuralNet'};
 var _user$project$Main$Hard = {ctor: 'Hard'};
 var _user$project$Main$Medium = {ctor: 'Medium'};
 var _user$project$Main$Easy = {ctor: 'Easy'};
-var _user$project$Main$initModel = {ballSpeed: 2.5, playerSpeed: 4, computerSpeed: 7, playerX: 40, playerY: 420, computerX: 40, computerY: 10, playerDirection: _user$project$Main$Still, computerDirection: _user$project$Main$Still, ballX: 250, ballY: 250, ballDirectionX: -1, ballDirectionY: 1, playerScore: 0, computerScore: 0, keyboardModel: _ohanhi$keyboard_extra$Keyboard_Extra$initialState, computerDifficulty: _user$project$Main$Easy};
+var _user$project$Main$initModel = {ballSpeed: 2.5, playerSpeed: 4, computerSpeed: 7, playerX: 40, playerY: 420, computerX: 40, computerY: 10, playerDirection: _user$project$Main$Still, computerDirection: _user$project$Main$Still, ballX: 250, ballY: 250, ballDirectionX: -1, ballDirectionY: 1, playerScore: 0, computerScore: 0, keyboardModel: _ohanhi$keyboard_extra$Keyboard_Extra$initialState, computerDifficulty: _user$project$Main$Easy, gameAreaString: ''};
 var _user$project$Main$init = {ctor: '_Tuple2', _0: _user$project$Main$initModel, _1: _elm_lang$core$Platform_Cmd$none};
 var _user$project$Main$ChangeDifficulty = function (a) {
 	return {ctor: 'ChangeDifficulty', _0: a};
@@ -11890,7 +11902,11 @@ var _user$project$Main$view = function (model) {
 										_1: {
 											ctor: '::',
 											_0: _user$project$Main$button_(_user$project$Main$Hard),
-											_1: {ctor: '[]'}
+											_1: {
+												ctor: '::',
+												_0: _user$project$Main$button_(_user$project$Main$NeuralNet),
+												_1: {ctor: '[]'}
+											}
 										}
 									}
 								}

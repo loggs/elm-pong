@@ -139,13 +139,34 @@ def discount_with_rewards(gradient_log_p, episode_rewards, gamma):
     discounted_episode_rewards /= np.std(discounted_episode_rewards)
     return gradient_log_p * discounted_episode_rewards
 
+PARAMETERS = {
+    'batch_size' : 10
+    , 'gamma' : 0.99 # discount factor for reward
+    , 'decay_rate' : 0.99
+    , 'num_hidden_layer_neurons' : 200
+    , 'input_dimensions' : 80 * 80
+    , 'learning_rate' : 1e-4
+    , 'episode_number' : 0
+    , 'reward_sum' : 0
+    , 'running_reward' : None
+    , 'prev_processed_observations' : None
+    # , 'weights' : {
+    #     '1': np.random.randn(num_hidden_layer_neurons, input_dimensions) / np.sqrt(input_dimensions),
+    #     '2': np.random.randn(num_hidden_layer_neurons) / np.sqrt(num_hidden_layer_neurons)
+    #     }
+    }
+
+
+
+
+
 
 def main():
     env = gym.make("Pong-v0")
     observation = env.reset() # This gets us the image
 
     # hyperparameters
-    episode_number = 0
+    # episode_number = 0
     batch_size = 10
     gamma = 0.99 # discount factor for reward
     decay_rate = 0.99
@@ -153,14 +174,14 @@ def main():
     input_dimensions = 80 * 80
     learning_rate = 1e-4
 
-    episode_number = 0
+    # episode_number = 0
     reward_sum = 0
     running_reward = None
     prev_processed_observations = None
 
     weights = {
-        '1': np.random.randn(num_hidden_layer_neurons, input_dimensions) / np.sqrt(input_dimensions),
-        '2': np.random.randn(num_hidden_layer_neurons) / np.sqrt(num_hidden_layer_neurons)
+         '1': np.random.randn(num_hidden_layer_neurons, input_dimensions) / np.sqrt(input_dimensions),
+         '2': np.random.randn(num_hidden_layer_neurons) / np.sqrt(num_hidden_layer_neurons)
     }
 
     # To be used with rmsprop algorithm (http://sebastianruder.com/optimizing-gradient-descent/index.html#rmsprop)
@@ -196,7 +217,7 @@ def main():
 
 
         if done: # an episode finished
-            episode_number += 1
+            PARAMETERS['episode_number'] += 1
 
             # Combine the following values for the episode
             episode_hidden_layer_values = np.vstack(episode_hidden_layer_values)
@@ -218,7 +239,7 @@ def main():
             for layer_name in gradient:
                 g_dict[layer_name] += gradient[layer_name]
 
-            if episode_number % batch_size == 0:
+            if PARAMETERS['episode_number'] % batch_size == 0:
                 update_weights(weights, expectation_g_squared, g_dict, decay_rate, learning_rate)
 
             episode_hidden_layer_values, episode_observations, episode_gradient_log_ps, episode_rewards = [], [], [], [] # reset values

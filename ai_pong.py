@@ -41,6 +41,27 @@ This is being used to allow quick and easy creation of the up. I look to build m
 import gym
 import numpy as np
 
+
+PARAMETERS = {
+    'batch_size': 10
+    , 'gamma': 0.99 # discount factor for reward
+    , 'decay_rate': 0.99
+    , 'num_hidden_layer_neurons': 200
+    , 'input_dimensions': 80 * 80
+    , 'learning_rate': 1e-4
+    , 'episode_number': 0
+    , 'reward_sum': 0
+    , 'running_reward': None
+    , 'prev_processed_observations': None
+    }
+
+
+WEIGHTS = {
+    '1': np.random.randn(PARAMETERS['num_hidden_layer_neurons'], PARAMETERS['input_dimensions']) / np.sqrt(PARAMETERS['input_dimensions']),
+    '2': np.random.randn(PARAMETERS['num_hidden_layer_neurons']) / np.sqrt(PARAMETERS['num_hidden_layer_neurons'])
+    }
+
+
 def downsample(image):
     # Take only alternate pixels - basically halves the resolution of the image (which is fine for us)
     return image[::2, ::2, :]
@@ -139,40 +160,42 @@ def discount_with_rewards(gradient_log_p, episode_rewards, gamma):
     discounted_episode_rewards /= np.std(discounted_episode_rewards)
     return gradient_log_p * discounted_episode_rewards
 
-PARAMETERS = {
-    'batch_size': 10
-    , 'gamma': 0.99 # discount factor for reward
-    , 'decay_rate': 0.99
-    , 'num_hidden_layer_neurons': 200
-    , 'input_dimensions': 80 * 80
-    , 'learning_rate': 1e-4
-    , 'episode_number': 0
-    , 'reward_sum': 0
-    , 'running_reward': None
-    , 'prev_processed_observations': None
+
+def initiate_environment(env_name):
+    env = gym.make(env_name)
+    observation = env.reset()
+    return env, observation
+
+def initiate_variables():
+    all_variables = {
+            'episode_hidden_layer_values': []
+            , 'episode_observations': []
+            , 'episode_gradient_log_ps': []
+            , 'episode_rewards': []
     }
+    return all_variables
 
-WEIGHTS = {
-    '1': np.random.randn(PARAMETERS['num_hidden_layer_neurons'], PARAMETERS['input_dimensions']) / np.sqrt(PARAMETERS['input_dimensions']),
-    '2': np.random.randn(PARAMETERS['num_hidden_layer_neurons']) / np.sqrt(PARAMETERS['num_hidden_layer_neurons'])
+def initiate_g_dict(weights):
+    expectation_g_squared = {layer_name: np.zeros_like(weights[layer_name]) for layer_name in weights}
+    g_dict = {layer_name: np.zeros_like(weights[layer_name])  for layer_name in weights}
+    return {
+        'expectation_g_squared': expectation_g_squared
+        , 'g_dict': g_dict
     }
-
-
 
 
 def main():
-    env = gym.make("Pong-v0")
-    observation = env.reset() # This gets us the image
-
+    env, observation = initiate_environment("Pong-v0")
+    rmsprop_vars = initiate_variables()
+    g_const = initiate_g_dict(WEIGHTS)
     # To be used with rmsprop algorithm (http://sebastianruder.com/optimizing-gradient-descent/index.html#rmsprop)
-    expectation_g_squared = {}
-    g_dict = {}
-    for layer_name in WEIGHTS.keys():
-        expectation_g_squared[layer_name] = np.zeros_like(WEIGHTS[layer_name])
-        g_dict[layer_name] = np.zeros_like(WEIGHTS[layer_name])
-
-    episode_hidden_layer_values, episode_observations, episode_gradient_log_ps, episode_rewards = [], [], [], []
-
+    # expectation_g_squared = {}
+    # g_dict = {}
+    # for layer_name in WEIGHTS.keys():
+    #     expectation_g_squared[layer_name] = np.zeros_like(WEIGHTS[layer_name])
+    #     g_dict[layer_name] = np.zeros_like(WEIGHTS[layer_name])
+    #
+    # episode_hidden_layer_values, episode_observations, episode_gradient_log_ps, episode_rewards = [], [], [], []
 
     while True:
         env.render()
@@ -180,8 +203,8 @@ def main():
         PARAMETERS['prev_processed_observations'] = new_observations
         hidden_layer_values, up_probability = apply_neural_nets(processed_observations, WEIGHTS)
  
-        episode_observations.append(processed_observations)
-        episode_hidden_layer_values.append(hidden_layer_values)
+        rmsprop_vars['episode_observations'].append(processed_observations)
+        rmsprop_vars['episode_hidden_layer_values'].append(hidden_layer_values)
 
         action = choose_action(up_probability)
 
@@ -189,45 +212,45 @@ def main():
         observation, reward, done, info = env.step(action)
 
         PARAMETERS['reward_sum'] += reward
-        episode_rewards.append(reward)
+        rmsprop_vars['episode_rewards'].append(reward)
 
         # see here: http://cs231n.github.io/neural-networks-2/#losses
         fake_label = 1 if action == 2 else 0
         loss_function_gradient = fake_label - up_probability
-        episode_gradient_log_ps.append(loss_function_gradient)
+        rmsprop_vars['episode_gradient_log_ps'].append(loss_function_gradient)
 
 
         if done: # an episode finished
             PARAMETERS['episode_number'] += 1
 
             # Combine the following values for the episode
-            episode_hidden_layer_values = np.vstack(episode_hidden_layer_values)
-            episode_observations = np.vstack(episode_observations)
-            episode_gradient_log_ps = np.vstack(episode_gradient_log_ps)
-            episode_rewards = np.vstack(episode_rewards)
+            rmsprop_vars['episode_hidden_layer_values'] = np.vstack(rmsprop_vars['episode_hidden_layer_values'])
+            rmsprop_vars['episode_observations'] = np.vstack(rmsprop_vars['episode_observations'])
+            rmsprop_vars['episode_gradient_log_ps'] = np.vstack(rmsprop_vars['episode_gradient_log_ps'])
+            rmsprop_vars['episode_rewards'] = np.vstack(rmsprop_vars['episode_rewards'])
 
             # Tweak the gradient of the log_ps based on the discounted rewards
-            episode_gradient_log_ps_discounted = discount_with_rewards(episode_gradient_log_ps, episode_rewards, PARAMETERS['gamma'])
+            episode_gradient_log_ps_discounted = discount_with_rewards(rmsprop_vars['episode_gradient_log_ps'], rmsprop_vars['episode_rewards'], PARAMETERS['gamma'])
 
             gradient = compute_gradient(
               episode_gradient_log_ps_discounted,
-              episode_hidden_layer_values,
-              episode_observations,
+              PARAMETERS['episode_hidden_layer_values'],
+              rmsprop_vars['episode_observations'],
               WEIGHTS
             )
 
             # Sum the gradient for use when we hit the batch size
             for layer_name in gradient:
-                g_dict[layer_name] += gradient[layer_name]
+                rmsprop_vars['g_dict'][layer_name] += gradient[layer_name]
 
             if PARAMETERS['episode_number'] % PARAMETERS['batch_size'] == 0:
-                update_weights(WEIGHTS, expectation_g_squared, g_dict, PARAMETERS['decay_rate'], PARAMETERS['learning_rate'])
+                update_weights(WEIGHTS, rmsprop_vars['expectation_g_squared'], rmsprop_vars['g_dict'], PARAMETERS['decay_rate'], PARAMETERS['learning_rate'])
 
-            episode_hidden_layer_values, episode_observations, episode_gradient_log_ps, episode_rewards = [], [], [], [] # reset values
+            rmsprop_vars = initiate_variables()
             observation = env.reset() # reset env
             PARAMETERS['running_reward'] = PARAMETERS['reward_sum'] if PARAMETERS['running_reward'] is None else PARAMETERS['running_reward'] * 0.99 + PARAMETERS['reward_sum'] * 0.01
             print 'resetting env. episode reward total was %f. running mean: %f' % (PARAMETERS['reward_sum'], PARAMETERS['running_reward'])
             PARAMETERS['reward_sum'] = 0
-            prev_processed_observations = None
+            PARAMETERS['prev_processed_observations'] = None
 
 main()

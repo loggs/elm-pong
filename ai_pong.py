@@ -40,7 +40,7 @@ This is being used to allow quick and easy creation of the up. I look to build m
 
 import gym
 import numpy as np
-
+from functools import reduce
 
 PARAMETERS = {
     'batch_size': 10
@@ -77,10 +77,8 @@ def remove_background(image):
 
 def preprocess_observations(input_observation, prev_processed_observation, input_dimensions):
     """ convert the 210x160x3 uint8 frame into a 6400 float vector """
-    processed_observation = input_observation[35:195] # crop
-    processed_observation = downsample(processed_observation)
-    processed_observation = remove_color(processed_observation)
-    processed_observation = remove_background(processed_observation)
+    cropped_observation = input_observation[35:195] # crop
+    processed_observation = reduce(lambda x, y: y(x), [downsample, remove_color, remove_background], cropped_observation)
     processed_observation[processed_observation != 0] = 1 # everything else (paddles, ball) just set to 1
     # Convert from 80 x 80 matrix to 1600 x 1 matrix
     processed_observation = processed_observation.astype(np.float).ravel()
@@ -185,17 +183,10 @@ def initiate_g_dict(weights):
 
 
 def main():
+    # To be used with rmsprop algorithm (http://sebastianruder.com/optimizing-gradient-descent/index.html#rmsprop)
     env, observation = initiate_environment("Pong-v0")
     rmsprop_vars = initiate_variables()
     g_const = initiate_g_dict(WEIGHTS)
-    # To be used with rmsprop algorithm (http://sebastianruder.com/optimizing-gradient-descent/index.html#rmsprop)
-    # expectation_g_squared = {}
-    # g_dict = {}
-    # for layer_name in WEIGHTS.keys():
-    #     expectation_g_squared[layer_name] = np.zeros_like(WEIGHTS[layer_name])
-    #     g_dict[layer_name] = np.zeros_like(WEIGHTS[layer_name])
-    #
-    # episode_hidden_layer_values, episode_observations, episode_gradient_log_ps, episode_rewards = [], [], [], []
 
     while True:
         env.render()
@@ -234,17 +225,17 @@ def main():
 
             gradient = compute_gradient(
               episode_gradient_log_ps_discounted,
-              PARAMETERS['episode_hidden_layer_values'],
+              rmsprop_vars['episode_hidden_layer_values'],
               rmsprop_vars['episode_observations'],
               WEIGHTS
             )
 
             # Sum the gradient for use when we hit the batch size
             for layer_name in gradient:
-                rmsprop_vars['g_dict'][layer_name] += gradient[layer_name]
+                g_const['g_dict'][layer_name] += gradient[layer_name]
 
             if PARAMETERS['episode_number'] % PARAMETERS['batch_size'] == 0:
-                update_weights(WEIGHTS, rmsprop_vars['expectation_g_squared'], rmsprop_vars['g_dict'], PARAMETERS['decay_rate'], PARAMETERS['learning_rate'])
+                update_weights(WEIGHTS, g_const['expectation_g_squared'], g_const['g_dict'], PARAMETERS['decay_rate'], PARAMETERS['learning_rate'])
 
             rmsprop_vars = initiate_variables()
             observation = env.reset() # reset env
@@ -253,4 +244,5 @@ def main():
             PARAMETERS['reward_sum'] = 0
             PARAMETERS['prev_processed_observations'] = None
 
-main()
+if __name__ == '__main__':
+    main()

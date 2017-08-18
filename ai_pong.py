@@ -263,42 +263,24 @@ def initiate_environment(env_name):
     observation = env.reset()
     return env, observation
 
-
-def initiate_variables():
-    all_variables = {
-            'episode_hidden_layer_values': []
-            , 'episode_observations': []
-            , 'episode_gradient_log_ps': []
-            , 'episode_rewards': []
-    }
-    return all_variables
-
-
-def initiate_g_dict(weights):
-    expectation_g_squared = {layer_name: np.zeros_like(weights[layer_name]) for layer_name in weights}
-    g_dict = {layer_name: np.zeros_like(weights[layer_name]) for layer_name in weights}
-    return {
-        'expectation_g_squared': expectation_g_squared
-        , 'g_dict': g_dict
-    }
-
-
 def main():
-    # To be used with rmsprop algorithm (http://sebastianruder.com/optimizing-gradient-descent/index.html#rmsprop)
+    # To be used with rmsprop algorithm
+    # (http://sebastianruder.com/optimizing-gradient-descent/index.html#rmsprop)
     env, observation = initiate_environment("Pong-v0")
     #rmsprop_vars = initiate_variables()
     #g_const = initiate_g_dict(WEIGHTS)
     model = init_model(200, 80 * 80)
     while True:
         env.render()
-        processed_observations, new_observations = preprocess_observations(observation, model)
-        model['prev_processed_observations'] = new_observations
-        hidden_layer_values, up_probability = apply_neural_nets(processed_observations, model['weights'])
+        processed_obs, new_obs = preprocess_observations(observation, model)
+        model['prev_processed_observations'] = new_obs
+        hidden_layer_values, up_prob = apply_neural_nets(processed_obs
+                                                         , model['weights'])
  
-        model['episode_observations'].append(processed_observations)
+        model['episode_observations'].append(processed_obs)
         model['episode_hidden_layer_values'].append(hidden_layer_values)
 
-        action = choose_action(up_probability)
+        action = choose_action(up_prob)
 
         # carry out the chosen action
         observation, reward, done, info = env.step(action)
@@ -308,7 +290,7 @@ def main():
 
         # see here: http://cs231n.github.io/neural-networks-2/#losses
         fake_label = 1 if action == 2 else 0
-        loss_function_gradient = fake_label - up_probability
+        loss_function_gradient = fake_label - up_prob
         model['episode_gradient_log_ps'].append(loss_function_gradient)
 
 
@@ -316,16 +298,20 @@ def main():
             model['episode_number'] += 1
 
             # Combine the following values for the episode
-            model['episode_hidden_layer_values'] = np.vstack(model['episode_hidden_layer_values'])
-            model['episode_observations'] = np.vstack(model['episode_observations'])
-            model['episode_gradient_log_ps'] = np.vstack(model['episode_gradient_log_ps'])
+            model['episode_hidden_layer_values'] = \
+                        np.vstack(model['episode_hidden_layer_values'])
+            model['episode_observations'] = \
+                        np.vstack(model['episode_observations'])
+            model['episode_gradient_log_ps'] = \
+                        np.vstack(model['episode_gradient_log_ps'])
             model['episode_rewards'] = np.vstack(model['episode_rewards'])
 
             # Tweak the gradient of the log_ps based on the discounted rewards
             episode_gradient_log_ps_discounted = discount_with_rewards(model)
 
 
-            gradient = compute_gradient(episode_gradient_log_ps_discounted, model)
+            gradient = compute_gradient(episode_gradient_log_ps_discounted
+                                        , model)
 
             # Sum the gradient for use when we hit the batch size
             for weight in model['weights'].keys():
